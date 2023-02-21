@@ -1,0 +1,9 @@
+{% if ingress_list %}
+    <ul>
+    {% for attempt in ingress_list %}
+        <li><a href="/data_in/{{ attempt.id }}/">{{ attempt.tag_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No data is available.</p>
+{% endif %}
