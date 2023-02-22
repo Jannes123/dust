@@ -82,8 +82,9 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-rechagalog/static/*
-flashor
+dust/static/*
+static/*
+halyard/*
 .env
 db.sqlite3
 

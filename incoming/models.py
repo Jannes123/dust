@@ -24,4 +24,17 @@ class FormalCellFind(models.Model):
     def __str__(self):
         return str(self.msisdn)
 
+class CodeFunction(models.Model):
+    call_log = models.IntegerField()
+    network =  models.CharField(max_length=255)
+    amount = models.IntegerField()
+    user_number = models.IntegerField()
+    sponsor_number = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = "incoming raw-data type custom"
+
+    def __str__(self):
+        return str(self.user_number)
+
 

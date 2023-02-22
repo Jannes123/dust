@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from incoming.models import DataIn, FormalCellFind
+from incoming.models import DataIn, FormalCellFind, CodeFunction
 from .serializers import DataInSerializer, FormalCellFindSerializer
 from django.http import HttpResponse
 from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt
+import json, datetime
+from django.http import Http404
 
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -30,16 +32,16 @@ def edit_detail_datain(request):
         LOGGER.debug(request.content_params)
         LOGGER.debug(request._messages)
         #save object to db
-        val_msisdn = request.GET['msisdn']
-        val_phase = request.GET['phase']
-        val_sessionid = request.GET['sessionid']
-        val_type = request.GET['type']
-        val_networkid = request.GET['networkid']
-        val_request = request.GET['request']
+        val_call_log = request.GET['call_log']
+        val_network = request.GET['network']
+        val_amount = request.GET['amount']
+        val_user_number = request.GET['user_number']
+        val_sponsor_number = request.GET['sponsor_number']
+        val_timestamp = datatime.datetime.now()
         try:
-            fitem = FormalCellFind(msisdn=val_msisdn, phase=val_phase, jsessionid=val_sessionid,\
-                    jtype=val_type, networkid=val_networkid,\
-                    jrequest=val_request)
+            fitem = CodeFunction(call_log=val_call_log, network=val_network, amount=val_amount,\
+                    user_number=val_user_number, sponsor_number=val_sponsor_number,\
+                    timestamp=val_timestamp)
             fitem.save()
         except DatabaseError:
             LOGGER.debug(DatabaseError)
@@ -47,30 +49,40 @@ def edit_detail_datain(request):
             #404 cannot create
 
     elif request.method == 'POST':
+        #post data received from logs:
+        #b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
         LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
         LOGGER.debug('POST')
         LOGGER.debug(request.path_info)
         LOGGER.debug(request.content_params)
         LOGGER.debug(request.POST)
         LOGGER.debug(request.headers)
+        LOGGER.debug('messages:')
         LOGGER.debug(request._messages)
-        if request.POST.__contains__('msisdn'):
-            LOGGER.debug(request.POST['msisdn'])
-            val_msisdn = request.POST['msisdn'][0]
-        if request.POST.__contains__('phase'):
-            val_phase = request.POST['phase'][0]
-        val_sessionid = request.POST['sessionid'][0]
-        val_type = request.POST['type'][0]
-        val_networkid = request.POST['networkid'][0]
-        val_request = request.POST['request'][0]
+        post_data_bytes = request.read()
+        LOGGER.debug(post_data_bytes)
+        post_data = post_data_bytes.decode('utf-8')
+        pn = json.loads(post_data)
+        LOGGER.debug(post_data)
+        LOGGER.debug(pn)
+        if pn.__contains__('call_log'):
+            LOGGER.debug(pn['call_log'])
+            val_call_log = pn['call_log']
+        if pn.__contains__('amount'):
+            val_amount = pn['amount']
+        val_user_number = pn['user_number']
+        val_sponsor_number = pn['sponsor_number']
+        val_network = pn['network']
+        val_timestamp = datetime.datetime.now()
         try:
-            fitem = FormalCellFind(msisdn=val_msisdn, phase=val_phase, jsessionid=val_sessionid,\
-                    jtype=val_type, networkid=val_networkid,\
-                    jrequest=val_request)
+            fitem = CodeFunction(call_log=val_call_log, network=val_network, amount=val_amount,\
+                    user_number=val_user_number, sponsor_number=val_sponsor_number,\
+                    timestamp=val_timestamp)
             fitem.save()
-        except DatabaseError:
-            LOGGER.debug(DatabaseError)
-            LOGGER.debug('Could not create entry')
+        except DatabaseError as e:
+            LOGGER.debug('unable to create entry')
+            LOGGER.debug(e)
+            raise Http404("cannot create entry")
             #404 cannot create
     else:
         LOGGER.debug('bullshit GET')
