@@ -9,7 +9,7 @@ from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt
 import json, datetime
 from django.http import Http404
-
+import uuid
 import logging
 LOGGER = logging.getLogger('django.request')
 
@@ -74,10 +74,11 @@ def edit_detail_datain(request):
         val_sponsor_number = pn['sponsor_number']
         val_network = pn['network']
         val_timestamp = datetime.datetime.now()
+        val_pay_url = uuid.uuid1()
         try:
             fitem = CodeFunction(call_log=val_call_log, network=val_network, amount=val_amount,\
                     user_number=val_user_number, sponsor_number=val_sponsor_number,\
-                    timestamp=val_timestamp)
+                    timestamp=val_timestamp, pay_url=val_pay_url)
             fitem.save()
         except DatabaseError as e:
             LOGGER.debug('unable to create entry')
@@ -86,8 +87,21 @@ def edit_detail_datain(request):
             #404 cannot create
     else:
         LOGGER.debug('bullshit GET')
-    res = 'received ' + str(request.method) + '   -   ' + str(request.__dict__)
+    res = 'received ' + str(request.method) 
     return HttpResponse(res)
+
+
+def outer(request):
+    LOGGER.debug('outer:')
+    if request.method == 'GET':
+        LOGGER.debug('GET it now:')
+        nr = CodeFunction.objects.get(pay_url=request.path_info)
+        LOGGER.debug(nr)
+        return HttpResponse(nr)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+        return HttpResponse('Still busy...')
+
 
 def index(request):
     LOGGER.debug(request.GET)

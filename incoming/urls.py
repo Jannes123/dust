@@ -5,7 +5,7 @@ from django.urls import re_path
 
 from incoming.views import index, simple_page_not_found, DataInListView,\
         edit_detail_datain, DataInDetailView, DataInViewSet,\
-        FormalCellFindViewSet
+        FormalCellFindViewSet, outer
 
 app_name = 'incoming'
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('', edit_detail_datain, name='edit_datain'),
     #path('in', DataInViewSet.as_view({'get':'create', 'post':'create'}), name='ingress_ussd'),
     path('in', FormalCellFindViewSet.as_view({'get':'create', 'post':'create'}), name='ingress_ussd'),
+    re_path(r'^outer/.{36}/$', outer, name='to-payment'),
 ]
 handler404 = 'incoming.views.simple_page_not_found'

@@ -17,6 +17,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.conf.urls.static import static
+from dust import settings
 
 urlpatterns = [
         path('admin/', admin.site.urls),
@@ -24,4 +26,4 @@ urlpatterns = [
         path('data/', include('incoming.urls', namespace='data')),
         path('', include('incoming.urls', namespace='incoming')),
         #path('in', include('incoming.urls', namespace='incoming-rest')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

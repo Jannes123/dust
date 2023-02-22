@@ -25,7 +25,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 SECRET_KEY = 'django-insecure-fj2js-xx^qt@1qf9uz(!x(xu#s*h%2pyqs7rbj(*f7a(md#w4q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['35.233.90.96', 'www.pleasetopmeup.com']
 
