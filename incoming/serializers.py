@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
-from .models import DataIn, FormalCellFind
+from .models import DataIn, FormalCellFind, CodeFunction
 import logging
 
 LOGGER = logging.getLogger('django.request')
@@ -80,4 +80,42 @@ class FormalCellFindSerializer(serializers.Serializer):
         instance.delete()
 
 
+class CodeFunctionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CodeFunction
+        fields = ('call_log', 'network', 'amount', 'user_number', 'sponsor_number', 'timestamp', 'pay_url')
+
+"""
+    call_log = serializers.IntegerField(required=True)
+    network = serializers.CharField(required=True)
+    amount = serializers.IntegerField(required=True)
+    user_number = serializers.IntegerField(required=False)
+    sponsor_number = serializers.IntegerField(required=False)
+    timestamp = serializers.DateTimeField(required=True)
+
+    def create(self, validated_data):
+"""
+#Create and return a new `datatag` instance, given the validated data.
+"""
+        LOGGER.debug('serializer: datatag serializer : create : ' + str(validated_data))
+        return CodeFunction.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+"""
+#Update and return an existing `datatag` instance, given the validated data.
+"""
+        instance.tag_name = validated_data.get('tag_name', instance.tag_name)
+        instance.tag_value = validated_data.get('tag_value', instance.tag_value)
+        instance.save()
+        LOGGER.debug(instance.__dict__)
+        return instance
+
+    def destroy(self, instance, validated_data):
+"""
+#Delete specified entry pairs.
+"""
+        LOGGER.debug('Serializer DataTagSerializer: delete')
+        instance.tag_name = validated_data.get('tag_name', instance.tag_name)
+        instance.delete()
+"""
 

@@ -29,8 +29,8 @@ class CodeFunction(models.Model):
     call_log = models.IntegerField()
     network = models.CharField(max_length=32)
     amount = models.IntegerField()
-    user_number = models.IntegerField()
-    sponsor_number = models.IntegerField()
+    user_number = models.CharField(max_length=32)
+    sponsor_number = models.CharField(max_length=32)
     timestamp = models.DateTimeField(auto_now=True)
     pay_url = models.CharField(default = uuid.uuid4, max_length=36)
     class Meta:
@@ -42,5 +42,4 @@ class CodeFunction(models.Model):
 
     def get_absolute_url(self):
         return r'/outer/{}/'.format(self.pay_url)
-
 
