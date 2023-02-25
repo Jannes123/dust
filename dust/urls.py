@@ -25,6 +25,4 @@ urlpatterns = [
         path('api-auth/', include('rest_framework.urls')),
         path('data/', include('incoming.urls', namespace='data')),
         path('', include('incoming.urls', namespace='incoming')),
-        #path('outxmldoc/', include('incoming.urls', namespace='incoming'))
-        #path('in', include('incoming.urls', namespace='incoming-rest')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

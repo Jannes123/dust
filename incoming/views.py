@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from incoming.models import DataIn, FormalCellFind, CodeFunction
-from .serializers import DataInSerializer, FormalCellFindSerializer, CodeFunctionSerializer
+from incoming.models import CodeFunction
+from .serializers import CodeFunctionSerializer
 from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.db import DatabaseError
@@ -11,15 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json, datetime
 from django.http import Http404
 import uuid
+from django.contrib.sites.models import Site
 import logging
 LOGGER = logging.getLogger('django.request')
-
-
-class DataInListView(ListView):
-    model = DataIn
-
-class DataInDetailView(DetailView):
-    model = DataIn
 
 
 @csrf_exempt
@@ -109,7 +103,8 @@ def outer(request):
         nr = CodeFunction.objects.get(pay_url=stripped_match)
         LOGGER.debug(nr)
         LOGGER.debug(nr.pay_url)
-        url_data = reverse('incoming:out-detail', kwargs={'pay_url':nr.pay_url})
+        jdomain = Site.objects.get_current().domain
+        url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url':nr.pay_url})
         return HttpResponse(url_data)
     elif request.method == 'POST':
         LOGGER.debug('POST')
@@ -149,30 +144,4 @@ class OuterXML(viewsets.ModelViewSet):
         doc_send = self.get_object()
         data_param = self.serializer_class(doc_send).data
         return Response(data_param, status=status.HTTP_200_OK)
-
-
-class DataInViewSet(viewsets.ModelViewSet):
-    queryset = DataIn.objects.all()
-    serializer_class = DataInSerializer
-    parser_classes = (XMLParser,)
-    renderer_classes = (XMLRenderer,)
-    
-    def create(self, request):
-        LOGGER.debug('create in DATAINVIEWSET')
-        LOGGER.debug(request.method)
-        super().create(request)
-
-class FormalCellFindViewSet(viewsets.ModelViewSet):
-    queryset = FormalCellFind.objects.all()
-    serializer_class = FormalCellFindSerializer
-    parser_classes = (XMLParser,)
-    renderer_classes = (XMLRenderer,)
-    
-    def create(self, request):
-        LOGGER.debug('create in FormalCellFindViewSet')
-        LOGGER.debug(request.method)
-        LOGGER.debug(request.path)
-        super().create(request)
-
-
 
