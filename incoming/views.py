@@ -12,6 +12,7 @@ import json, datetime
 from django.http import Http404
 import uuid
 from django.contrib.sites.models import Site
+from django.template.response import TemplateResponse
 import logging
 LOGGER = logging.getLogger('django.request')
 
@@ -26,23 +27,8 @@ def edit_detail_datain(request):
         #LOGGER.debug("edit_detail_in:GET:" + str(request.__dict__))
         LOGGER.debug(request.content_params)
         LOGGER.debug(request._messages)
-        #save object to db
-        val_call_log = request.GET['call_log']
-        val_network = request.GET['network']
-        val_amount = request.GET['amount']
-        val_user_number = request.GET['user_number']
-        val_sponsor_number = request.GET['sponsor_number']
-        val_timestamp = datetime.datetime.now()
-        try:
-            fitem = CodeFunction(call_log=val_call_log, network=val_network, amount=val_amount,\
-                    user_number=val_user_number, sponsor_number=val_sponsor_number,\
-                    timestamp=val_timestamp)
-            fitem.save()
-        except DatabaseError:
-            LOGGER.debug(DatabaseError)
-            LOGGER.debug('Could not create entry')
-            #404 cannot create
-
+        t = TemplateResponse(request, 'incoming/home.html', {})
+        return t
     elif request.method == 'POST':
         #post data received from logs:
         #b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
@@ -90,6 +76,9 @@ def edit_detail_datain(request):
 
 
 def outer(request):
+    """
+    start payment process debit card.
+    """
     LOGGER.debug('outer:')
     if request.method == 'GET':
         LOGGER.debug('GET it now:')
@@ -98,17 +87,20 @@ def outer(request):
         match_result = request.path_info
         stripped_match = match_result.rstrip(r'/')
         LOGGER.debug(stripped_match)
-        stripped_match = stripped_match.lstrip(r'/outer/')
+        stripped_match = stripped_match.lstrip(r'/pay-link/')
         LOGGER.debug(stripped_match)
         nr = CodeFunction.objects.get(pay_url=stripped_match)
         LOGGER.debug(nr)
         LOGGER.debug(nr.pay_url)
         jdomain = Site.objects.get_current().domain
         url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url':nr.pay_url})
+        LOGGER.debug(url_data)
+        data_out = '<a href="{}">link text</a>'.format(url_data)
+        LOGGER.debug(data_out)
         return HttpResponse(url_data)
     elif request.method == 'POST':
-        LOGGER.debug('POST')
-        return HttpResponse('Still busy...')
+        LOGGER.debug('POST not supported')
+        return HttpResponse('POST not supported')
 
 
 def index(request):
