@@ -1,0 +1,23 @@
+- model: incoming.productionpurchase
+  pk: 1
+  fields:
+    name: Elvis
+    surname: Presley
+    email: elvis@gmail.com
+    mobile: 0828000222
+- model: incoming.productionpurchase
+  pk: 2
+  fields:
+    name: Paul
+    surname: McCartney
+    email: paulmc@gmail.com
+    mobile: 0828000333
+
+- model: incoming.merchantdata
+  pk: 1
+  fields:
+    merchant_uuid: f9281f32-adc3-4b80-85c0-addb02637838
+    merchant_account_uuid: 356edcf1-c049-4f9a-a850-158fa35eddfb
+    security_key: c@!!@ll2023
+
+
