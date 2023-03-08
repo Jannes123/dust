@@ -20,4 +20,8 @@
     merchant_account_uuid: 356edcf1-c049-4f9a-a850-158fa35eddfb
     security_key: c@!!@ll2023
 
-
+- model: sites.site
+  pk: 1
+  fields:
+    domain: pleasetopmeup.com
+    name: pleasetopmeup

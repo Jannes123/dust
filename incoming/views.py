@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from incoming.models import CodeFunction
+from incoming.models import CodeFunction, ProductionPurchase
 from .serializers import CodeFunctionSerializer
 from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.db import DatabaseError
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json, datetime
 from django.http import Http404
 import uuid
@@ -70,9 +70,10 @@ def edit_detail_datain(request):
     return OuterXML.as_view({'post':'retrieve'})(request, pay_url=val_pay_url)
     #return HttpResponse(res)
 
-
+@csrf_protect
 def outer(request):
     """
+    unique url from request.
     start payment process debit card.
     """
     LOGGER.debug('outer:')
@@ -85,19 +86,36 @@ def outer(request):
         LOGGER.debug(stripped_match)
         stripped_match = stripped_match.lstrip(r'/pay-link/')
         LOGGER.debug(stripped_match)
-        nr = CodeFunction.objects.get(pay_url=stripped_match)
-        LOGGER.debug(nr)
-        LOGGER.debug(nr.pay_url)
-        jdomain = Site.objects.get_current().domain
+        try:
+            nr = CodeFunction.objects.get(pay_url=stripped_match)
+            LOGGER.debug(nr)
+            LOGGER.debug(nr.pay_url)
+        except DatabaseError as e:
+            LOGGER.debug('unable to retrieve entry')
+            LOGGER.debug(e)
+            raise Http404("cannot retrieve entry")
+        
+        try:
+            jdomain = Site.objects.get_current().domain
+        except DatabaseError as e:
+            LOGGER.debug('unable to retrieve entry')
+            LOGGER.debug(e)
+            raise Http404("cannot retrieve entry")
+        # use reverse and config in urls.py to 
+        # call OuterXML restful interface detail method with arguments
         url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url':nr.pay_url})
         LOGGER.debug(url_data)
-        data_out = '<a href="{}">link text</a>'.format(url_data)
+        data_out = '<a href="https://{}">link text</a>'.format(url_data)
         LOGGER.debug(data_out)
-        return HttpResponse(url_data)
+        # use production purchase form and model to capture user info on request of unique url
+        form = ProductionPurchaseForm()
+        context = {'form':form, 'data_something':data_out}
+        LOGGER.debug(form.__dict__)
+        return render(request, 'incoming/data_user.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST not supported')
+        form = ProductionPurchaseForm(request.POST) 
         return HttpResponse('POST not supported')
-
 
 def index(request):
     LOGGER.debug(request.GET)
@@ -107,6 +125,7 @@ def index(request):
 
 def simple_page_not_found(request, exception):
     LOGGER.debug(request.GET)
+    LOGGER.debug('simple page not found')
     return render(request, 'incoming/page_not_found.html')
 
 from rest_framework import routers, serializers, viewsets
