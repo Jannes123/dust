@@ -3,6 +3,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase
+from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer
 from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
@@ -20,7 +21,8 @@ LOGGER = logging.getLogger('django.request')
 @csrf_exempt
 def edit_detail_datain(request):
     """
-    incoming json, outgoing xml?? 
+    incoming json, outgoing xml??
+    curl -k -X POST https://pleasetopmeup.com/ussdincoming -H 'Content-Type: application/json' -d '{"call_log":"256789506","amount":"39","user_number":"0792218349","sponsor_number":"0828000256","network":"Vodacom"}
     """
     LOGGER.debug(request.path_info)
     if request.method == 'GET':
@@ -66,6 +68,7 @@ def edit_detail_datain(request):
         LOGGER.debug('wrong method: GET')
     res = 'received ' + str(request.method)
     #http redirect to url serving xml doc
+    # data was saved now return confirmation along with uuid
     LOGGER.debug('edit_detail_datain: phase1 complete')
     return OuterXML.as_view({'post':'retrieve'})(request, pay_url=val_pay_url)
     #return HttpResponse(res)

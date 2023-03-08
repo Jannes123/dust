@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PayInit
+from .models import PayInit, ProductionPurchase
 
 class PayInitForm(forms.ModelForm):
     class Meta:
