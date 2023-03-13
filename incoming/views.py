@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json, datetime
 from django.http import Http404
 import uuid
+import re
 from django.contrib.sites.models import Site
 from django.template.response import TemplateResponse
 import logging
@@ -82,12 +83,12 @@ def outer(request):
     LOGGER.debug('outer:')
     if request.method == 'GET':
         LOGGER.debug('GET it now:')
+        LOGGER.debug(request.GET.__dict__)
         LOGGER.debug(request.content_params)
         LOGGER.debug(request._messages)
         match_result = request.path_info
-        stripped_match = match_result.rstrip(r'/')
-        LOGGER.debug(stripped_match)
-        stripped_match = stripped_match.lstrip(r'/pay-link/')
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
         try:
             nr = CodeFunction.objects.get(pay_url=stripped_match)
@@ -117,7 +118,19 @@ def outer(request):
         return render(request, 'incoming/data_user.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST not supported')
-        form = ProductionPurchaseForm(request.POST) 
+        form = ProductionPurchaseForm(request.POST)
+        if form.is_valid():
+            result = form.save()#Do lots of validation
+            LOGGER.debug(result)
+            #redirect to success page/instapay
+            pay_url = r'https://www.google.com'
+            context = {'payment_destination': pay_url}
+            return render(request, 'incoming/proceed_to_payment.html', context)
+        else:
+            new_form = ProductionPurchaseForm(request.POST)
+            context = {'form':new_form}
+            LOGGER.debug(context)
+            return render(request, 'incoming/data_user.html', context)
         return HttpResponse('POST not supported')
 
 def index(request):

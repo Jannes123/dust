@@ -18,8 +18,8 @@ class CodeFunction(models.Model):
         verbose_name_plural = "incoming raw-data type custom"
         ordering = ['timestamp']
 
-    def __str__(self):
-        return str(self.user_number)
+#    def __str__(self):
+#        return str(self.user_number)
 
     def get_absolute_url(self):
         return r'/outer/{}/'.format(self.pay_url)

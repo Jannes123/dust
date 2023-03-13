@@ -11,6 +11,7 @@ router.register("xmlapi", OuterXML, basename="out")
 app_name = 'incoming'
 urlpatterns = [
     path('', edit_detail_datain, name='edit_datain'),
+    re_path(r'^index[.html]$', edit_detail_datain, name='edit_datain'),
     re_path(r'^outer/.{36}/$', outer, name='to-payment'),
     re_path(r'pay-link/.{36}/$',outer, name='payments'),
     path('outxmldoc', OuterXML.as_view({'get':'xmlout'}), name='accept payment'),

@@ -25,7 +25,7 @@ PROJECT_DIR = Path(__file__).resolve().parent
 SECRET_KEY = 'django-insecure-fj2js-xx^qt@1qf9uz(!x(xu#s*h%2pyqs7rbj(*f7a(md#w4q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
 
@@ -156,7 +156,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'staticdust/'
-STATIC_ROOT = 'static'
+STATIC_ROOT = str(PROJECT_DIR) + 'static'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
