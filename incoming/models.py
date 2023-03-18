@@ -88,10 +88,16 @@ class MerchantData(models.Model):
     merchant_uuid = models.CharField(max_length=36)
     merchant_account_uuid = models.CharField(max_length=36)
     security_key = models.CharField(max_length=32)
+    merchant_shortcode = models.CharField(max_length=36, null=True, blank=True)#merchant shortcode allocated by trustlink
 
 class ProductionPurchase(models.Model):
     name = models.CharField(max_length=50, blank=True)
     surname = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
     mobile = models.CharField(max_length=14)
+    original_url_unique = models.ForeignKey(
+        'CodeFunction',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 

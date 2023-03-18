@@ -112,26 +112,85 @@ def outer(request):
         data_out = '<a href="https://{}">link text</a>'.format(url_data)
         LOGGER.debug(data_out)
         # use production purchase form and model to capture user info on request of unique url
-        form = ProductionPurchaseForm()
+        mob_nr = nr.sponsor_number
+        form = ProductionPurchaseForm(initial={'mobile':mob_nr})
         context = {'form':form, 'data_something':data_out}
         LOGGER.debug(form.__dict__)
         return render(request, 'incoming/data_user.html', context)
     elif request.method == 'POST':
-        LOGGER.debug('POST not supported')
+        LOGGER.debug('outer production purchase POST')
+        LOGGER.debug(request.POST)
         form = ProductionPurchaseForm(request.POST)
         if form.is_valid():
             result = form.save()#Do lots of validation
+            #also save uuid or use foreign key to link to sms form
             LOGGER.debug(result)
-            #redirect to success page/instapay
-            pay_url = r'https://www.google.com'
+            #next view to redirect to success page/instapay
+            LOGGER.debug('redirecting to following url upon button press:')
+            LOGGER.debug(reverse('ussd:to-instapay'))
+            pay_url = reverse('ussd:to-instapay')
+            match_result = request.path_info
+            stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+            stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+            pay_url = pay_url + '/' + stripped_match + '/'
+            LOGGER.debug(pay_url)
             context = {'payment_destination': pay_url}
+            match_result = request.path_info
+            stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+            stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+            context.update({'url_data':stripped_match})
+            LOGGER.debug('second phase complete')
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
             new_form = ProductionPurchaseForm(request.POST)
             context = {'form':new_form}
             LOGGER.debug(context)
             return render(request, 'incoming/data_user.html', context)
-        return HttpResponse('POST not supported')
+
+# third phase
+def pay_destination(request):
+    if request.method == 'GET':
+        #form redirects here from view named outer
+        #gather data for instapay request and do redirect
+        LOGGER.debug('get instapay data:')
+        #Merchant uuid
+        m_uuid = '00000000000000000000000'
+        #Merchant account uuid
+        m_account_uuid
+        m_site_name = "pleasetopmeup"
+        m_site_reference = "cloud"
+        m_card_allowed = "true"
+        m_ieft_allowed = "true"
+        m_mpass_allowed = "true"
+        m_chips_allowed = "true"
+        m_trident_allowed = "true"
+        m_payat_allowed = "false"
+        # buyer details
+        try:
+            buyer_details = ProductionPurchase.objects.get(uuid_link=request['uuid_link'])
+        except DatabaseError as derr:
+            LOGGER.debug(derr)
+        LOGGER.debug(buyer_details)
+        #get merchant_shortcode
+        try:
+            m_short = MerchantData.objects.get(pk=1).merchant_shortcode
+        except DatabaseError as derr:
+            LOGGER.debug(derr)
+        m_tx_order_nr = str(m_short)[0:2] + uuid.uuid1()[3:-1]
+        LOGGER.debug('m_tx_order_nr')
+        m_tx_id = uuid.uuid1()#spec in doc 36 chars/string len of 36
+        m_tx_currency = 'ZAR'#update to dynamic possibly later
+        m_tx_amount = 0.00#Decimal, total amount requested by buyer
+        m_tx_item_name = 'Airtime'
+        m_tx_item_name = 'prepaid'
+        httpdata = [m_site_name, m_site_reference, m_card_allowed, m_ieft_allowed, m_mpass_allowed,\
+                m_chips_allowed, m_trident_allowed, m_payat_allowed, buyer_details, m_tx_order_nr, m_tx_id, m_tx_currency,\
+                m_tx_amount, m_tx_item_name, m_tx_item_name]
+        return render(request, '', {'jhttpdata':httpdata})#redirect according to docs
+    else:
+        # not supported
+        LOGGER.debug('pay_destination:Unsupported request')
+        LOGGER.debug(request.method)
 
 def index(request):
     LOGGER.debug(request.GET)

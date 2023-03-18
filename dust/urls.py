@@ -22,7 +22,7 @@ from dust import settings
 admin.site.site_header = 'PTMU'
 urlpatterns = [
         path('admin/', admin.site.urls),
-        path('index.html',include('incoming.urls', namespace='incoming')),
+        path('index.html',include('incoming.urls', namespace='index')),
         path('api-auth/', include('rest_framework.urls')),
         #path('data/', include('incoming.urls', namespace='data')),
         path('ussdincoming/', include('incoming.urls', namespace='ussd')),
