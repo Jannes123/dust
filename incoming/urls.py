@@ -15,6 +15,8 @@ urlpatterns = [
     re_path(r'^outer/.{36}/$', outer, name='to-confimation'),
     re_path(r'^confirm$/.{36}/$', pay_destination, name='to-instapay'),
     re_path(r'pay-link/.{36}/$',outer, name='payments'),
+    re_path(r'jpay-return/.{36}/$', pay_return, name='return-from-pay'),
+    re_path(r'jpay-notify/.{36}/$', pay_notify, name='notify-after-paid'),
     path('outxmldoc', OuterXML.as_view({'get':'xmlout'}), name='accept payment'),
     path('routa/', include(router.urls)),
     path('404', simple_page_not_found, name='simple_page_not_found')

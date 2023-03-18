@@ -182,15 +182,37 @@ def pay_destination(request):
         m_tx_currency = 'ZAR'#update to dynamic possibly later
         m_tx_amount = 0.00#Decimal, total amount requested by buyer
         m_tx_item_name = 'Airtime'
-        m_tx_item_name = 'prepaid'
+        m_tx_item_description = 'prepaid'
+        m_tx_invoice_nr = '00000'
+        m_return_url = reverse('ussd:return-from-pay')
+        m_cancel_url = reverse('ussd:cancel')
+        m_pending_url = reverse('ussd:pending')
+        m_notify_url  = reverse('ussd:notify-after-paid')
+        #m_email_address = 
+        #checksum
         httpdata = [m_site_name, m_site_reference, m_card_allowed, m_ieft_allowed, m_mpass_allowed,\
                 m_chips_allowed, m_trident_allowed, m_payat_allowed, buyer_details, m_tx_order_nr, m_tx_id, m_tx_currency,\
-                m_tx_amount, m_tx_item_name, m_tx_item_name]
+                m_tx_amount, m_tx_item_name, m_tx_item_description, m_tx_invoice_nr,\
+                m_return_url, m_cancel_url, m_pending_url, m_notify_url]
         return render(request, '', {'jhttpdata':httpdata})#redirect according to docs
     else:
         # not supported
         LOGGER.debug('pay_destination:Unsupported request')
         LOGGER.debug(request.method)
+
+def pay_return(request):
+    LOGGER.debug('pay_return')
+    if request.method == 'GET':
+        LOGGER.debug('GET')
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+    else:
+        LOGGER.debug('not supported')
+
 
 def index(request):
     LOGGER.debug(request.GET)
