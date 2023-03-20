@@ -159,8 +159,11 @@ def pay_destination(request):
         m_trident_allowed = "true"
         m_payat_allowed = "false"
         # buyer details
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         try:
-            buyer_details = ProductionPurchase.objects.get(original_url_unique=request['uuid_url_link'])
+            buyer_details = ProductionPurchase.objects.get(original_url_unique=stripped_match)
         except DatabaseError as derr:
             LOGGER.debug(derr)
         LOGGER.debug(buyer_details)
