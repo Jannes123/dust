@@ -162,6 +162,7 @@ def pay_destination(request):
         match_result = request.path_info
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
         try:
             buyer_details = ProductionPurchase.objects.filter(
                     original_url_unique__pay_url=stripped_match)
