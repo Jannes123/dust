@@ -5,6 +5,7 @@ from django.db import models
 from django.shortcuts import reverse
 import uuid
 
+
 class CodeFunction(models.Model):
     """ussd integration"""
     call_log = models.IntegerField()
@@ -24,6 +25,7 @@ class CodeFunction(models.Model):
     def get_absolute_url(self):
         return r'/outer/{}/'.format(self.pay_url)
 
+
 class PayInit(models.Model):
     """instapay info return path"""
     payeeUuid = models.CharField(max_length=36)
@@ -38,6 +40,7 @@ class PayInit(models.Model):
     payeeOrderNr = models.CharField(max_length=50)
     payeeOrderItemName = models.CharField(max_length=50)
     payeeOrderItemDescription = models.CharField(max_length=60)
+
 
 class PayBuyer(models.Model):
     """instapay info return path"""
@@ -67,6 +70,7 @@ class PayRequest(models.Model):
     def get_absolute_url(self):
         return r'/pay-request/{}/'.format(self.requestTokenId)
 
+
 class PayDetails(models.Model):
     detailchoices = [('D','DEPOSIT'), ('R','RECEIPT')]
     methodchoices = [('Card', 'CARD'),
@@ -82,6 +86,7 @@ class PayDetails(models.Model):
     paymentDateTime = models.DateTimeField(auto_now=True)
     paymentType = models.CharField(max_length=10, choices=detailchoices)
     paymentMethod = models.CharField(max_length=12, choices=methodchoices)
+
 
 class MerchantData(models.Model):
     """System setup data variables. """

@@ -65,14 +65,13 @@ def edit_detail_datain(request):
             LOGGER.debug(e)
             raise Http404("cannot create entry")
             #404 cannot create
+        # http redirect to url serving xml doc
+        # data was saved now return confirmation along with uuid
+        LOGGER.debug('edit_detail_datain: phase1 complete')
+        return OuterXML.as_view({'post': 'retrieve'})(request, pay_url=val_pay_url)
     else:
         LOGGER.debug('wrong method: GET')
-    res = 'received ' + str(request.method)
-    #http redirect to url serving xml doc
-    # data was saved now return confirmation along with uuid
-    LOGGER.debug('edit_detail_datain: phase1 complete')
-    return OuterXML.as_view({'post':'retrieve'})(request, pay_url=val_pay_url)
-    #return HttpResponse(res)
+
 
 @csrf_protect
 def outer(request):
