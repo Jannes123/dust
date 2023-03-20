@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from incoming.models import CodeFunction, ProductionPurchase
+from incoming.models import CodeFunction, ProductionPurchase, MerchantData
 from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -138,14 +138,15 @@ def outer(request):
             match_result = request.path_info
             stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
             stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-            context.update({'url_data':stripped_match})
+            context.update({'url_data': stripped_match})
             LOGGER.debug('second phase complete')
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
             new_form = ProductionPurchaseForm(request.POST)
-            context = {'form':new_form}
+            context = {'form': new_form}
             LOGGER.debug(context)
             return render(request, 'incoming/data_user.html', context)
+
 
 # third phase
 def pay_destination(request):
@@ -153,10 +154,6 @@ def pay_destination(request):
         #form redirects here from view named outer
         #gather data for instapay request and do redirect
         LOGGER.debug('get instapay data:')
-        #Merchant uuid
-        m_uuid = '00000000000000000000000'
-        #Merchant account uuid
-        m_account_uuid
         m_site_name = "pleasetopmeup"
         m_site_reference = "cloud"
         m_card_allowed = "true"
@@ -167,17 +164,30 @@ def pay_destination(request):
         m_payat_allowed = "false"
         # buyer details
         try:
-            buyer_details = ProductionPurchase.objects.get(uuid_link=request['uuid_link'])
+            buyer_details = ProductionPurchase.objects.get(original_url_unique=request['uuid_url_link'])
         except DatabaseError as derr:
             LOGGER.debug(derr)
         LOGGER.debug(buyer_details)
-        #get merchant_shortcode
+        if type(buyer_details) == list:
+            buyer = buyer_details[0]
+        else:
+            buyer = buyer_details
+        b_name = buyer.name
+        b_surname = buyer.surname
+        b_email = buyer.email
+        b_mobile = buyer.mobile
+        # get merchant_shortcode
         try:
-            m_short = MerchantData.objects.get(pk=1).merchant_shortcode
+            m_short = MerchantData.objects.get(pk=1)
         except DatabaseError as derr:
             LOGGER.debug(derr)
-        m_tx_order_nr = str(m_short)[0:2] + uuid.uuid1()[3:-1]
-        LOGGER.debug('m_tx_order_nr')
+        if type(m_short) == list:
+            merchant_data = m_short[0]
+        else:
+            merchant_data = m_short
+        m_uuid = merchant_data.merchant_uuid
+        m_account_uuid = merchant_data.merchant_account_uuid
+        m_tx_order_nr = 'rhl' + uuid.uuid1()[-18:-1]
         m_tx_id = uuid.uuid1()#spec in doc 36 chars/string len of 36
         m_tx_currency = 'ZAR'#update to dynamic possibly later
         m_tx_amount = 0.00#Decimal, total amount requested by buyer
@@ -187,18 +197,27 @@ def pay_destination(request):
         m_return_url = reverse('ussd:return-from-pay')
         m_cancel_url = reverse('ussd:cancel')
         m_pending_url = reverse('ussd:pending')
-        m_notify_url  = reverse('ussd:notify-after-paid')
+        m_notify_url = reverse('ussd:notify-after-paid')
         #m_email_address = 
         #checksum
-        httpdata = [m_site_name, m_site_reference, m_card_allowed, m_ieft_allowed, m_mpass_allowed,\
-                m_chips_allowed, m_trident_allowed, m_payat_allowed, buyer_details, m_tx_order_nr, m_tx_id, m_tx_currency,\
-                m_tx_amount, m_tx_item_name, m_tx_item_description, m_tx_invoice_nr,\
-                m_return_url, m_cancel_url, m_pending_url, m_notify_url]
-        return render(request, '', {'jhttpdata':httpdata})#redirect according to docs
+        jhttp_data = {'m_uuid': m_uuid, 'm_account_uuid': m_account_uuid, 'm_site_name': m_site_name,
+                      'm_site_reference': m_site_reference, 'm_card_allowed': m_card_allowed,
+                      'm_ieft_allowed': m_ieft_allowed, 'm_mpass_allowed': m_mpass_allowed,
+                      'm_chips_allowed': m_chips_allowed, 'm_trident_allowed': m_trident_allowed,
+                      'm_payat_allowed': m_payat_allowed, 'buyer_details': buyer_details, 'm_tx_order_nr': m_tx_order_nr,
+                      'm_tx_id': m_tx_id, 'm_tx_currency': m_tx_currency,
+                      'm_tx_amount': m_tx_amount, 'm_tx_item_name': m_tx_item_name,
+                      'm_tx_item_description': m_tx_item_description,
+                      'm_tx_invoice_nr': m_tx_invoice_nr, 'm_return_url': m_return_url,
+                      'm_cancel_url': m_cancel_url, 'm_pending_url': m_pending_url, 'm_notify_url': m_notify_url
+                      }
+        LOGGER.debug('redirecting')
+        return HttpResponseRedirect(r'https://instapay-sandbox.trustlinkhosting.com/index.php', jhttp_data) #redirect according to docs
     else:
         # not supported
         LOGGER.debug('pay_destination:Unsupported request')
         LOGGER.debug(request.method)
+
 
 def pay_return(request):
     LOGGER.debug('pay_return')
@@ -220,10 +239,12 @@ def index(request):
     context = {'ingress_list': ingress_list}
     return render(request, 'incoming/index.html', context)
 
+
 def simple_page_not_found(request, exception):
     LOGGER.debug(request.GET)
     LOGGER.debug('simple page not found')
     return render(request, 'incoming/page_not_found.html')
+
 
 from rest_framework import routers, serializers, viewsets
 from rest_framework_xml.parsers import XMLParser
