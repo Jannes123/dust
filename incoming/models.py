@@ -90,6 +90,7 @@ class MerchantData(models.Model):
     security_key = models.CharField(max_length=32)
     merchant_shortcode = models.CharField(max_length=36, null=True, blank=True)#merchant shortcode allocated by trustlink
 
+
 class ProductionPurchase(models.Model):
     name = models.CharField(max_length=50, blank=True)
     surname = models.CharField(max_length=50)
