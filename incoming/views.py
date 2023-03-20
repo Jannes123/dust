@@ -163,7 +163,8 @@ def pay_destination(request):
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         try:
-            buyer_details = ProductionPurchase.objects.get(codefunction=stripped_match)
+            buyer_details = ProductionPurchase.objects.filter(
+                codefunction__pay_url=stripped_match)
         except DatabaseError as derr:
             LOGGER.debug(derr)
         LOGGER.debug(buyer_details)
