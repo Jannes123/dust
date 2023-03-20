@@ -4,8 +4,9 @@ from django.urls import path
 from django.urls import re_path
 from django.urls.conf import include
 from incoming.views import index, simple_page_not_found,\
-        edit_detail_datain, outer, OuterXML, pay_destination
-from rest_framework.routers import DefaultRouter,SimpleRouter
+        edit_detail_datain, outer, OuterXML, pay_destination,\
+        pay_return
+from rest_framework.routers import DefaultRouter, SimpleRouter
 router = DefaultRouter()
 router.register("xmlapi", OuterXML, basename="out")
 app_name = 'incoming'
