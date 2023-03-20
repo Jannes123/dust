@@ -135,10 +135,6 @@ def outer(request):
             pay_url = pay_url + '/' + stripped_match + '/'
             LOGGER.debug(pay_url)
             context = {'payment_destination': pay_url}
-            match_result = request.path_info
-            stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-            stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-            context.update({'url_data': stripped_match})
             LOGGER.debug('second phase complete')
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
