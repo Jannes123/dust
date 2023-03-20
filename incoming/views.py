@@ -164,18 +164,20 @@ def pay_destination(request):
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         try:
             buyer_details = ProductionPurchase.objects.filter(
-                codefunction__pay_url=stripped_match)
+                    original_url_unique__pay_url=stripped_match)
         except DatabaseError as derr:
             LOGGER.debug(derr)
         LOGGER.debug(buyer_details)
-        if type(buyer_details) == list:
-            buyer = buyer_details[0]
+        if (type(buyer_details) == list) or (type(buyer_details) == django.db.models.query.QuerySet):
+            buyer_obj = buyer_details[0]
         else:
-            buyer = buyer_details
-        b_name = buyer.name
-        b_surname = buyer.surname
-        b_email = buyer.email
-        b_mobile = buyer.mobile
+            LOGGER.debug('not a list')
+            LOGGER.debug(str(type(buyer_details)))
+            buyer_obj = buyer_details
+        b_name = buyer_obj.name
+        b_surname = buyer_obj.surname
+        b_email = buyer_obj.email
+        b_mobile = buyer_obj.mobile
         # get merchant_shortcode
         try:
             m_short = MerchantData.objects.get(pk=1)
