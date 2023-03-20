@@ -233,6 +233,19 @@ def pay_return(request):
         LOGGER.debug('not supported')
 
 
+def pay_notify(request):
+    LOGGER.debug('pay_notify')
+    if request.method == 'GET':
+        LOGGER.debug('GET')
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+    else:
+        LOGGER.debug('not supported')
+
 def index(request):
     LOGGER.debug(request.GET)
     ingress_list = DataIn.objects.order_by('tag_name')[:5]
