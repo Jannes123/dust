@@ -202,7 +202,7 @@ def pay_destination(request):
         m_uuid = merchant_data.merchant_uuid
         m_account_uuid = merchant_data.merchant_account_uuid
         m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
-        m_tx_id = uuid.uuid1()#spec in doc 36 chars/string len of 36
+        m_tx_id = uuid.uuid4()#spec in doc 36 chars/string len of 36
         m_tx_currency = 'ZAR'#update to dynamic possibly later
         m_tx_amount = 0.00#Decimal, total amount requested by buyer
         m_tx_item_name = 'Airtime'
@@ -259,6 +259,35 @@ def pay_notify(request):
         LOGGER.debug('POST')
     else:
         LOGGER.debug('not supported')
+
+
+def pay_cancel(request):
+    LOGGER.debug('pay_cancel')
+    if request.method == 'GET':
+        LOGGER.debug('GET')
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+    else:
+        LOGGER.debug('not supported')
+
+
+def pay_pending(request):
+    LOGGER.debug('pay_cancel')
+    if request.method == 'GET':
+        LOGGER.debug('GET')
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+    else:
+        LOGGER.debug('not supported')
+
 
 def index(request):
     LOGGER.debug(request.GET)
