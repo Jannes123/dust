@@ -123,15 +123,25 @@ def outer(request):
         form = ProductionPurchaseForm(request.POST)
         if form.is_valid():
             result = form.save()#Do lots of validation
-            #also save uuid or use foreign key to link to sms form
             LOGGER.debug(result)
+            # refresh result variable from db???
+            stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+            stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+            try:
+                nr = CodeFunction.objects.get(pay_url=stripped_match)
+                LOGGER.debug(nr)
+                LOGGER.debug(nr.pay_url)
+            except DatabaseError as e:
+                LOGGER.debug('unable to retrieve entry')
+                LOGGER.debug(e)
+            result.original_url_unique = nr
+            result.save()
             #next view to redirect to success page/instapay
             LOGGER.debug('redirecting to following url upon button press:')
             LOGGER.debug(reverse('ussd:to-instapay'))
             pay_url = reverse('ussd:to-instapay')
             match_result = request.path_info
-            stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-            stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+
             pay_url = pay_url + '/' + stripped_match + '/'
             LOGGER.debug(pay_url)
             context = {'payment_destination': pay_url}
