@@ -125,6 +125,7 @@ def outer(request):
             result = form.save()#Do lots of validation
             LOGGER.debug(result)
             # refresh result variable from db???
+            match_result = request.path_info
             stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
             stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
             try:
