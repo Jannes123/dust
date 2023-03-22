@@ -201,7 +201,7 @@ def pay_destination(request):
             merchant_data = m_short
         m_uuid = merchant_data.merchant_uuid
         m_account_uuid = merchant_data.merchant_account_uuid
-        m_tx_order_nr = 'rhl' + uuid.uuid1()[-18:-1]
+        m_tx_order_nr = 'rhl' + str(uuid.uuid1())[-18:-1]
         m_tx_id = uuid.uuid1()#spec in doc 36 chars/string len of 36
         m_tx_currency = 'ZAR'#update to dynamic possibly later
         m_tx_amount = 0.00#Decimal, total amount requested by buyer
