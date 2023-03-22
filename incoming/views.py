@@ -20,6 +20,7 @@ import logging
 LOGGER = logging.getLogger('django.request')
 
 
+#ussd first phase
 @csrf_exempt
 def edit_detail_datain(request):
     """
@@ -73,7 +74,7 @@ def edit_detail_datain(request):
     else:
         LOGGER.debug('wrong method: GET')
 
-
+#second phase
 @csrf_protect
 def outer(request):
     """
