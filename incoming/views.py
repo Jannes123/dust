@@ -82,7 +82,7 @@ def get_insta_form(request):
                   'm_site_reference': m_site_reference, 'm_card_allowed': m_card_allowed,
                   'm_ieft_allowed': m_ieft_allowed, 'm_mpass_allowed': m_mpass_allowed,
                   'm_chips_allowed': m_chips_allowed, 'm_trident_allowed': m_trident_allowed,
-                  'm_payat_allowed': m_payat_allowed, 'buyer_details': buyer_details, 'm_tx_order_nr': m_tx_order_nr,
+                  'm_payat_allowed': m_payat_allowed, 'm_tx_order_nr': m_tx_order_nr,
                   'm_tx_id': m_tx_id, 'm_tx_currency': m_tx_currency,
                   'm_tx_amount': m_tx_amount, 'm_tx_item_name': m_tx_item_name,
                   'm_tx_item_description': m_tx_item_description,
@@ -102,7 +102,6 @@ def get_insta_form(request):
         m_chips_allowed = forms.BooleanField(label='m_chips_allowed', required=False)
         m_trident_allowed = forms.BooleanField(label='m_trident_allowed', required=False)
         m_payat_allowed = forms.BooleanField(label='m_payat_allowed', required=False)
-        buyer_details = forms.CharField(label='buyer_details', max_length=100)
         m_tx_order_nr = forms.CharField(label='m_tx_order_nr', max_length=100)
         m_tx_id = forms.CharField(label='m_tx_id', max_length=100)
         m_tx_currency = forms.CharField(label='m_tx_currency', max_length=100)
