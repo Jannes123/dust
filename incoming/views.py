@@ -72,10 +72,10 @@ def get_insta_form(request):
     m_tx_item_name = 'Airtime'
     m_tx_item_description = 'prepaid'
     m_tx_invoice_nr = '00000'
-    m_return_url = reverse('ussd:return-from-pay')
-    m_cancel_url = reverse('ussd:cancel')
-    m_pending_url = reverse('ussd:pending')
-    m_notify_url = reverse('ussd:notify-after-paid')
+    m_return_url = reverse('ussd:return-from-pay') + stripped_match + '/'
+    m_cancel_url = reverse('ussd:cancel') + stripped_match + '/'
+    m_pending_url = reverse('ussd:pending') + stripped_match + '/'
+    m_notify_url = reverse('ussd:notify-after-paid') + stripped_match + '/'
     # m_email_address =
     # checksum
     jhttp_data = {'m_uuid': m_uuid, 'm_account_uuid': m_account_uuid, 'm_site_name': m_site_name,
