@@ -28,11 +28,11 @@ def get_insta_form(request):
     m_site_name = "pleasetopmeup"
     m_site_reference = "cloud"
     m_card_allowed = True
-    m_ieft_allowed = "true"
-    m_mpass_allowed = "true"
-    m_chips_allowed = "true"
-    m_trident_allowed = "true"
-    m_payat_allowed = "false"
+    m_ieft_allowed = True
+    m_mpass_allowed = True
+    m_chips_allowed = True
+    m_trident_allowed = True
+    m_payat_allowed = False
     # buyer details
     match_result = request.path_info
     stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
