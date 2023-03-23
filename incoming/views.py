@@ -95,7 +95,8 @@ def get_insta_form(request):
         f_m_uuid = forms.CharField(label='m_uuid', max_length=100)
         f_m_account_uuid = forms.CharField(label='m_account_uuid', max_length=100)
 
-    insta_form_obj = InstaForm(initial=jhttp_data)
+    insta_form_obj = InstaForm(jhttp_data)
+
     return insta_form_obj
 
 #ussd first phase
