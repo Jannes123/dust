@@ -8,6 +8,7 @@ from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
+from django import forms
 from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json, datetime
@@ -19,6 +20,83 @@ from django.template.response import TemplateResponse
 import logging
 LOGGER = logging.getLogger('django.request')
 
+
+#not intended as view only utility function for building a large form
+def get_insta_form(request):
+    """utility function for building a large form"""
+    LOGGER.debug('get instapay data:')
+    m_site_name = "pleasetopmeup"
+    m_site_reference = "cloud"
+    m_card_allowed = "true"
+    m_ieft_allowed = "true"
+    m_mpass_allowed = "true"
+    m_chips_allowed = "true"
+    m_trident_allowed = "true"
+    m_payat_allowed = "false"
+    # buyer details
+    match_result = request.path_info
+    stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+    stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+    LOGGER.debug(stripped_match)
+    try:
+        buyer_details = ProductionPurchase.objects.filter(
+            original_url_unique__pay_url=stripped_match)
+    except DatabaseError as derr:
+        LOGGER.debug(derr)
+    LOGGER.debug(buyer_details)
+    if (type(buyer_details) == list) or (type(buyer_details) == django.db.models.query.QuerySet):
+        buyer_obj = buyer_details[0]
+    else:
+        LOGGER.debug('not a list')
+        LOGGER.debug(str(type(buyer_details)))
+        buyer_obj = buyer_details
+    b_name = buyer_obj.name
+    b_surname = buyer_obj.surname
+    b_email = buyer_obj.email
+    b_mobile = buyer_obj.mobile
+    # get merchant_shortcode
+    try:
+        m_short = MerchantData.objects.get(pk=1)
+    except DatabaseError as derr:
+        LOGGER.debug(derr)
+    if type(m_short) == list:
+        merchant_data = m_short[0]
+    else:
+        merchant_data = m_short
+    m_uuid = merchant_data.merchant_uuid
+    m_account_uuid = merchant_data.merchant_account_uuid
+    m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
+    m_tx_id = uuid.uuid4()  # spec in doc 36 chars/string len of 36
+    m_tx_currency = 'ZAR'  # update to dynamic possibly later
+    m_tx_amount = 0.00  # Decimal, total amount requested by buyer
+    m_tx_item_name = 'Airtime'
+    m_tx_item_description = 'prepaid'
+    m_tx_invoice_nr = '00000'
+    m_return_url = reverse('ussd:return-from-pay')
+    m_cancel_url = reverse('ussd:cancel')
+    m_pending_url = reverse('ussd:pending')
+    m_notify_url = reverse('ussd:notify-after-paid')
+    # m_email_address =
+    # checksum
+    jhttp_data = {'m_uuid': m_uuid, 'm_account_uuid': m_account_uuid, 'm_site_name': m_site_name,
+                  'm_site_reference': m_site_reference, 'm_card_allowed': m_card_allowed,
+                  'm_ieft_allowed': m_ieft_allowed, 'm_mpass_allowed': m_mpass_allowed,
+                  'm_chips_allowed': m_chips_allowed, 'm_trident_allowed': m_trident_allowed,
+                  'm_payat_allowed': m_payat_allowed, 'buyer_details': buyer_details, 'm_tx_order_nr': m_tx_order_nr,
+                  'm_tx_id': m_tx_id, 'm_tx_currency': m_tx_currency,
+                  'm_tx_amount': m_tx_amount, 'm_tx_item_name': m_tx_item_name,
+                  'm_tx_item_description': m_tx_item_description,
+                  'm_tx_invoice_nr': m_tx_invoice_nr, 'm_return_url': m_return_url,
+                  'm_cancel_url': m_cancel_url, 'm_pending_url': m_pending_url, 'm_notify_url': m_notify_url,
+                  'b_name': b_name, 'b_surname': b_surname, 'b_email': b_email, 'b_mobile': b_mobile,
+                  }
+
+    class InstaForm(forms.Form):
+        f_m_uuid = forms.CharField(label='m_uuid', max_length=100)
+        f_m_account_uuid = forms.CharField(label='m_account_uuid', max_length=100)
+
+    insta_form_obj = InstaForm(initial=jhttp_data)
+    return insta_form_obj
 
 #ussd first phase
 @csrf_exempt
@@ -108,14 +186,14 @@ def outer(request):
             raise Http404("cannot retrieve entry")
         # use reverse and config in urls.py to 
         # call OuterXML restful interface detail method with arguments
-        url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url':nr.pay_url})
+        url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url': nr.pay_url})
         LOGGER.debug(url_data)
         data_out = '<a href="https://{}">link text</a>'.format(url_data)
         LOGGER.debug(data_out)
         # use production purchase form and model to capture user info on request of unique url
         mob_nr = nr.sponsor_number
-        form = ProductionPurchaseForm(initial={'mobile':mob_nr})
-        context = {'form':form, 'data_something':data_out}
+        form = ProductionPurchaseForm(initial={'mobile': mob_nr})
+        context = {'form': form, 'data_something': data_out}
         LOGGER.debug(form.__dict__)
         return render(request, 'incoming/data_user.html', context)
     elif request.method == 'POST':
@@ -142,12 +220,12 @@ def outer(request):
             LOGGER.debug('redirecting to following url upon button press:')
             LOGGER.debug(reverse('ussd:to-instapay'))
             pay_url = reverse('ussd:to-instapay')
-            match_result = request.path_info
-
             pay_url = pay_url + '/' + stripped_match + '/'
             LOGGER.debug(pay_url)
             context = {'payment_destination': pay_url}
             LOGGER.debug('second phase complete')
+            insta = get_insta_form(request)
+            context.update({'insta': insta})
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
             new_form = ProductionPurchaseForm(request.POST)
@@ -159,75 +237,11 @@ def outer(request):
 # third phase
 def pay_destination(request):
     if request.method == 'GET':
+        LOGGER.debug('pay_destination:GET')
         #form redirects here from view named outer
         #gather data for instapay request and do redirect
-        LOGGER.debug('get instapay data:')
-        m_site_name = "pleasetopmeup"
-        m_site_reference = "cloud"
-        m_card_allowed = "true"
-        m_ieft_allowed = "true"
-        m_mpass_allowed = "true"
-        m_chips_allowed = "true"
-        m_trident_allowed = "true"
-        m_payat_allowed = "false"
-        # buyer details
-        match_result = request.path_info
-        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-        LOGGER.debug(stripped_match)
-        try:
-            buyer_details = ProductionPurchase.objects.filter(
-                    original_url_unique__pay_url=stripped_match)
-        except DatabaseError as derr:
-            LOGGER.debug(derr)
-        LOGGER.debug(buyer_details)
-        if (type(buyer_details) == list) or (type(buyer_details) == django.db.models.query.QuerySet):
-            buyer_obj = buyer_details[0]
-        else:
-            LOGGER.debug('not a list')
-            LOGGER.debug(str(type(buyer_details)))
-            buyer_obj = buyer_details
-        b_name = buyer_obj.name
-        b_surname = buyer_obj.surname
-        b_email = buyer_obj.email
-        b_mobile = buyer_obj.mobile
-        # get merchant_shortcode
-        try:
-            m_short = MerchantData.objects.get(pk=1)
-        except DatabaseError as derr:
-            LOGGER.debug(derr)
-        if type(m_short) == list:
-            merchant_data = m_short[0]
-        else:
-            merchant_data = m_short
-        m_uuid = merchant_data.merchant_uuid
-        m_account_uuid = merchant_data.merchant_account_uuid
-        m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
-        m_tx_id = uuid.uuid4()#spec in doc 36 chars/string len of 36
-        m_tx_currency = 'ZAR'#update to dynamic possibly later
-        m_tx_amount = 0.00#Decimal, total amount requested by buyer
-        m_tx_item_name = 'Airtime'
-        m_tx_item_description = 'prepaid'
-        m_tx_invoice_nr = '00000'
-        m_return_url = reverse('ussd:return-from-pay')
-        m_cancel_url = reverse('ussd:cancel')
-        m_pending_url = reverse('ussd:pending')
-        m_notify_url = reverse('ussd:notify-after-paid')
-        #m_email_address = 
-        #checksum
-        jhttp_data = {'m_uuid': m_uuid, 'm_account_uuid': m_account_uuid, 'm_site_name': m_site_name,
-                      'm_site_reference': m_site_reference, 'm_card_allowed': m_card_allowed,
-                      'm_ieft_allowed': m_ieft_allowed, 'm_mpass_allowed': m_mpass_allowed,
-                      'm_chips_allowed': m_chips_allowed, 'm_trident_allowed': m_trident_allowed,
-                      'm_payat_allowed': m_payat_allowed, 'buyer_details': buyer_details, 'm_tx_order_nr': m_tx_order_nr,
-                      'm_tx_id': m_tx_id, 'm_tx_currency': m_tx_currency,
-                      'm_tx_amount': m_tx_amount, 'm_tx_item_name': m_tx_item_name,
-                      'm_tx_item_description': m_tx_item_description,
-                      'm_tx_invoice_nr': m_tx_invoice_nr, 'm_return_url': m_return_url,
-                      'm_cancel_url': m_cancel_url, 'm_pending_url': m_pending_url, 'm_notify_url': m_notify_url
-                      }
         LOGGER.debug('redirecting')
-        return HttpResponseRedirect(r'https://instapay-sandbox.trustlinkhosting.com/index.php', jhttp_data) #redirect according to docs
+        return HttpResponseRedirect(r'https://instapay-sandbox.trustlinkhosting.com/index.php')#redirect according to docs
     else:
         # not supported
         LOGGER.debug('pay_destination:Unsupported request')
