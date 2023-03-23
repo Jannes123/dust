@@ -27,7 +27,7 @@ def get_insta_form(request):
     LOGGER.debug('get instapay data:')
     m_site_name = "pleasetopmeup"
     m_site_reference = "cloud"
-    m_card_allowed = "true"
+    m_card_allowed = True
     m_ieft_allowed = "true"
     m_mpass_allowed = "true"
     m_chips_allowed = "true"
@@ -94,9 +94,13 @@ def get_insta_form(request):
     class InstaForm(forms.Form):
         f_m_uuid = forms.CharField(label='m_uuid', max_length=100)
         f_m_account_uuid = forms.CharField(label='m_account_uuid', max_length=100)
+        f_m_site_name = forms.CharField(label='m_site_name', max_length=100)
+        f_m_site_reference = forms.CharField(label='m_site_reference', max_length=100)
+        f_m_card_allowed = forms.CharField(label='m_card_allowed', max_length=100)
 
     insta_form_obj = InstaForm(jhttp_data)
-
+    LOGGER.debug('tried binding:')
+    LOGGER.debug(insta_form_obj.is_bound)
     return insta_form_obj
 
 #ussd first phase
