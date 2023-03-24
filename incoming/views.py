@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import django
+import hashlib
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData
@@ -78,6 +79,12 @@ def get_insta_form(request):
     m_notify_url = reverse('ussd:notify-after-paid') + stripped_match + '/'
     # m_email_address =
     # checksum
+    secret = '007'
+    check_calculation = "{}_{}_{}_{}_ZAR_{}" \
+        .format(m_uuid, m_account_uuid, m_tx_id, m_tx_amount, secret)
+    check_calculation = hashlib.md5(check_calculation).hexdigest()
+    LOGGER.debug(check_calculation)
+
     jhttp_data = {'m_uuid': m_uuid, 'm_account_uuid': m_account_uuid, 'm_site_name': m_site_name,
                   'm_site_reference': m_site_reference, 'm_card_allowed': m_card_allowed,
                   'm_ieft_allowed': m_ieft_allowed, 'm_mpass_allowed': m_mpass_allowed,
@@ -89,6 +96,7 @@ def get_insta_form(request):
                   'm_tx_invoice_nr': m_tx_invoice_nr, 'm_return_url': m_return_url,
                   'm_cancel_url': m_cancel_url, 'm_pending_url': m_pending_url, 'm_notify_url': m_notify_url,
                   'b_name': b_name, 'b_surname': b_surname, 'b_email': b_email, 'b_mobile': b_mobile,
+                  'checksum': check_calculation,
                   }
 
     class InstaForm(forms.Form):
@@ -117,10 +125,12 @@ def get_insta_form(request):
         b_surname = forms.CharField(label='b_surname', max_length=100, required=False)
         b_email = forms.CharField(label='b_email', max_length=100)
         b_mobile = forms.CharField(label='b_mobile', max_length=100)
+        checksum = forms.CharField(label='checksum', max_length=100)
 
     insta_form_obj = InstaForm(jhttp_data)
     LOGGER.debug('tried binding:')
     LOGGER.debug(insta_form_obj.is_bound)
+
     return insta_form_obj
 
 #ussd first phase
