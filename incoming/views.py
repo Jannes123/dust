@@ -82,6 +82,7 @@ def get_insta_form(request):
     secret = '007'
     check_calculation = "{}_{}_{}_{}_ZAR_{}" \
         .format(m_uuid, m_account_uuid, m_tx_id, m_tx_amount, secret)
+    check_calculation = check_calculation.encode('UTF-8', errors='strict')
     check_calculation = hashlib.md5(check_calculation).hexdigest()
     LOGGER.debug(check_calculation)
 
