@@ -130,6 +130,7 @@ def get_insta_form(request):
     insta_form_obj = InstaForm(jhttp_data)
     LOGGER.debug('tried binding:')
     LOGGER.debug(insta_form_obj.is_bound)
+    LOGGER.debug(insta_form_obj)
 
     return insta_form_obj
 
