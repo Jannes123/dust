@@ -19,6 +19,7 @@
     merchant_uuid: f9281f32-adc3-4b80-85c0-addb02637838
     merchant_account_uuid: 356edcf1-c049-4f9a-a850-158fa35eddfb
     security_key: c@!!@ll2023
+    current_invoice_number: 1
 
 - model: sites.site
   pk: 1

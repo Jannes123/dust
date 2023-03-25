@@ -15,6 +15,7 @@ class CodeFunction(models.Model):
     sponsor_number = models.CharField(max_length=32)
     timestamp = models.DateTimeField(auto_now=True)
     pay_url = models.CharField(default = uuid.uuid4, max_length=36)
+
     class Meta:
         verbose_name_plural = "incoming raw-data type custom"
         ordering = ['timestamp']
@@ -72,14 +73,14 @@ class PayRequest(models.Model):
 
 
 class PayDetails(models.Model):
-    detailchoices = [('D','DEPOSIT'), ('R','RECEIPT')]
+    detailchoices = [('D', 'DEPOSIT'), ('R', 'RECEIPT')]
     methodchoices = [('Card', 'CARD'),
-            ('Card Credit', 'CARD CREDIT'),
-            ('Card Debit', 'CARD DEBIT'),
-            ('Cash-Wallet', 'CASH WALLET'),
-            ('Default','DEFAULT'),
-            ('EFT Instant', 'EFT INSTANT')
-            ]
+                     ('Card Credit', 'CARD CREDIT'),
+                     ('Card Debit', 'CARD DEBIT'),
+                     ('Cash-Wallet', 'CASH WALLET'),
+                     ('Default', 'DEFAULT'),
+                     ('EFT Instant', 'EFT INSTANT')
+                     ]
     paymentSystemReference = models.CharField(max_length=36, blank=True)
     paymentAmount = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
     paymentCurrency = models.CharField(max_length=3)
@@ -94,6 +95,7 @@ class MerchantData(models.Model):
     merchant_account_uuid = models.CharField(max_length=36)
     security_key = models.CharField(max_length=32)
     merchant_shortcode = models.CharField(max_length=36, null=True, blank=True)#merchant shortcode allocated by trustlink
+    current_invoice_number = models.IntegerField()
 
 
 class ProductionPurchase(models.Model):
@@ -101,6 +103,7 @@ class ProductionPurchase(models.Model):
     surname = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
     mobile = models.CharField(max_length=14)
+    amount = models.DecimalField(max_digits=5, decimal_places=2)
     original_url_unique = models.ForeignKey(
         'CodeFunction',
         on_delete=models.CASCADE,

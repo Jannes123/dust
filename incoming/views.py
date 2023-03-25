@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import django
 import hashlib
+from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData
@@ -12,7 +13,8 @@ from django.urls import reverse_lazy, reverse
 from django import forms
 from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-import json, datetime
+import json
+import datetime
 from django.http import Http404
 import uuid
 import re
@@ -55,6 +57,7 @@ def get_insta_form(request):
     b_surname = buyer_obj.surname
     b_email = buyer_obj.email
     b_mobile = buyer_obj.mobile
+    m_tx_amount = str(Decimal(buyer_obj.amount))
     # get merchant_shortcode
     try:
         m_short = MerchantData.objects.get(pk=1)
@@ -69,10 +72,9 @@ def get_insta_form(request):
     m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
     m_tx_id = uuid.uuid4()  # spec in doc 36 chars/string len of 36
     m_tx_currency = 'ZAR'  # update to dynamic possibly later
-    m_tx_amount = 0.00  # Decimal, total amount requested by buyer
     m_tx_item_name = 'Airtime'
     m_tx_item_description = 'prepaid'
-    m_tx_invoice_nr = '00000'
+    m_tx_invoice_nr = str(merchant_data.current_invoice_number)
     m_return_url = reverse('ussd:return-from-pay') + stripped_match + '/'
     m_cancel_url = reverse('ussd:cancel') + stripped_match + '/'
     m_pending_url = reverse('ussd:pending') + stripped_match + '/'
@@ -229,7 +231,8 @@ def outer(request):
         LOGGER.debug(data_out)
         # use production purchase form and model to capture user info on request of unique url
         mob_nr = nr.sponsor_number
-        form = ProductionPurchaseForm(initial={'mobile': mob_nr})
+        amount = float(nr.amount)
+        form = ProductionPurchaseForm(initial={'mobile': mob_nr, 'amnt': amount})
         context = {'form': form, 'data_something': data_out}
         LOGGER.debug(form.__dict__)
         return render(request, 'incoming/data_user.html', context)
