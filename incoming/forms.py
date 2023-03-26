@@ -11,4 +11,4 @@ class PayInitForm(forms.ModelForm):
 class ProductionPurchaseForm(forms.ModelForm):
     class Meta:
         model = ProductionPurchase
-        fields = ['name', 'surname', 'email', 'mobile']
+        fields = ['name', 'surname', 'email', 'mobile', 'amount']
