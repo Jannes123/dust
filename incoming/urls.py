@@ -27,6 +27,5 @@ urlpatterns = [
     re_path(r'jpay-pending/.{36}/$', pay_pending, name='pending-post'),
     path('outxmldoc', OuterXML.as_view({'get': 'xmlout'}), name='accept payment'),
     path('routa/', include(router.urls)),
-    path('404', simple_page_not_found, name='simple_page_not_found')
-]
+    path('404', simple_page_not_found, name='simple_page_not_found')]
 handler404 = 'incoming.views.simple_page_not_found'

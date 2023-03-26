@@ -5,9 +5,10 @@ import hashlib
 from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from incoming.models import CodeFunction, ProductionPurchase, MerchantData
+from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
+    PayInit
 from incoming.forms import ProductionPurchaseForm
-from .serializers import CodeFunctionSerializer
+from .serializers import CodeFunctionSerializer, PayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django import forms
@@ -274,7 +275,6 @@ def outer(request):
             return render(request, 'incoming/data_user.html', context)
 
 
-# third phase
 def pay_destination(request):
     if request.method == 'GET':
         LOGGER.debug('pay_destination:GET')
@@ -288,6 +288,7 @@ def pay_destination(request):
         LOGGER.debug(request.method)
 
 
+# third phase
 def pay_return(request):
     LOGGER.debug('pay_return')
     if request.method == 'GET':
@@ -296,24 +297,13 @@ def pay_return(request):
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
+        context = {'home': reverse('ussd:edit_datain')}
+        return render(request, 'incoming/return.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
     else:
         LOGGER.debug('not supported')
 
-
-def pay_notify(request):
-    LOGGER.debug('pay_notify')
-    if request.method == 'GET':
-        LOGGER.debug('GET')
-        match_result = request.path_info
-        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-        LOGGER.debug(stripped_match)
-    elif request.method == 'POST':
-        LOGGER.debug('POST')
-    else:
-        LOGGER.debug('not supported')
 
 
 def pay_cancel(request):
@@ -381,3 +371,45 @@ class OuterXML(viewsets.ModelViewSet):
         data_param = self.serializer_class(doc_send).data
         return Response(data_param, status=status.HTTP_200_OK)
 
+
+def pay_notify(request):
+    LOGGER.debug('pay_notify')
+    if request.method == 'GET':
+        # log payment confirmation(big entry) to db.
+        LOGGER.debug('GET')
+        LOGGER.debug(request)
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+        # log payment confirmation(big entry) to db.
+        LOGGER.debug(request)
+        return NotifyXML.as_view({'post': 'create'})(request)
+    else:
+        LOGGER.debug('not supported')
+
+
+class NotifyXML(viewsets.ModelViewSet):
+    queryset = PayInit.objects.all()
+    serializer_class = PayInitSerializer
+    parser_classes = (XMLParser,)
+    renderer_classes = (XMLRenderer,)
+    #lookup_field = 'pay_url'
+    LOGGER.debug('outerxml modelviewset class')
+
+    def xml_save_all(self, request, notify_url):
+        # merchant
+        # buyer
+        # request details
+        # payment details
+        # checksum
+        LOGGER.debug('---xml_save_all---')
+        #LOGGER.debug(kwargs)
+        LOGGER.debug(request)
+        #cashdrp = kwargs['pay_url']
+        #queryset = self.get_queryset().filter(pay_url=cashdrp)
+        doc_send = self.get_object()
+        data_param = self.serializer_class(doc_send).data
+        return Response(data_param, status=status.HTTP_200_OK)
