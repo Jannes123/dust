@@ -305,7 +305,6 @@ def pay_return(request):
         LOGGER.debug('not supported')
 
 
-
 def pay_cancel(request):
     LOGGER.debug('pay_cancel')
     if request.method == 'GET':
