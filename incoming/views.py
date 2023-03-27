@@ -75,8 +75,8 @@ def get_insta_form(request):
     m_tx_currency = 'ZAR'  # update to dynamic possibly later
     m_tx_item_name = 'Airtime'
     m_tx_item_description = 'prepaid'
-    m_tx_invoice_nr = str(merchant_data.current_invoice_number)
-    merchant_data.current_invoice_number = '{:06d}'.format(int(merchant_data.current_invoice_number) + 1)
+    m_tx_invoice_nr = '{:06d}'.format(int(merchant_data.current_invoice_number))
+    merchant_data.current_invoice_number = int(m_tx_invoice_nr) + 1
     try:
         merchant_data.save()
     except DatabaseError as save_err:
