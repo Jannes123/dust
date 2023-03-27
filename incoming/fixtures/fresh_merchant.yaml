@@ -26,5 +26,5 @@
 - model: sites.site
   pk: 1
   fields:
-    domain: pleasetopmeup.com
+    domain: www.pleasetopmeup.com
     name: pleasetopmeup
