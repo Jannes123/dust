@@ -26,7 +26,7 @@ LOGGER = logging.getLogger('django.request')
 
 
 #not intended as view only utility function for building a large form
-def get_insta_form(request):
+def get_insta_form(request, jamount):
     """utility function for building a large form"""
     LOGGER.debug('get instapay data:')
     m_site_name = "pleasetopmeup"
@@ -58,7 +58,7 @@ def get_insta_form(request):
     b_surname = buyer_obj.surname
     b_email = buyer_obj.email
     b_mobile = buyer_obj.mobile
-    m_tx_amount = str(Decimal(buyer_obj.amount))
+    m_tx_amount = str(jamount)
     # get merchant_shortcode
     try:
         m_short = MerchantData.objects.get(pk=1)
@@ -273,7 +273,7 @@ def outer(request):
             LOGGER.debug(pay_url)
             context = {'payment_destination': pay_url}
             LOGGER.debug('second phase complete')
-            insta = get_insta_form(request)
+            insta = get_insta_form(request, jamount=result.amount)
             context.update({'insta': insta})
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
