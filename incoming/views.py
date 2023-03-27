@@ -81,13 +81,19 @@ def get_insta_form(request):
         merchant_data.save()
     except DatabaseError as save_err:
         LOGGER.debug(save_err)
-    m_return_url = reverse('ussd:return-from-pay') + stripped_match + '/'
-    m_cancel_url = reverse('ussd:cancel') + stripped_match + '/'
-    m_pending_url = reverse('ussd:pending') + stripped_match + '/'
-    m_notify_url = reverse('ussd:notify-after-paid') + stripped_match + '/'
+    # build abs urls for instapay form
+    try:
+        jdomain = Site.objects.get_current().domain
+    except DatabaseError as e:
+        LOGGER.debug('get_insta_form: unable to retrieve entry')
+        LOGGER.debug(e)
+    m_return_url = jdomain + reverse('ussd:return-from-pay') + stripped_match + '/'
+    m_cancel_url = jdomain + reverse('ussd:cancel') + stripped_match + '/'
+    m_pending_url = jdomain + reverse('ussd:pending') + stripped_match + '/'
+    m_notify_url = jdomain + reverse('ussd:notify-after-paid') + stripped_match + '/'
     # m_email_address =
     # checksum
-    secret = '007'
+    secret = '009'
     check_calculation = "{}_{}_{}_{}_ZAR_{}" \
         .format(m_uuid, m_account_uuid, m_tx_id, m_tx_amount, secret)
     check_calculation = check_calculation.encode('UTF-8', errors='strict')
@@ -207,11 +213,6 @@ def outer(request):
     LOGGER.debug('outer:')
     if request.method == 'GET':
         LOGGER.debug('GET it now:')
-        LOGGER.debug(request)
-        LOGGER.debug(request.scheme)
-        LOGGER.debug(request.META)
-        LOGGER.debug(request.content_params)
-        LOGGER.debug(request._messages)
         match_result = request.path_info
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
