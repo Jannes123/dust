@@ -76,6 +76,11 @@ def get_insta_form(request):
     m_tx_item_name = 'Airtime'
     m_tx_item_description = 'prepaid'
     m_tx_invoice_nr = str(merchant_data.current_invoice_number)
+    merchant_data.current_invoice_number = '{:06d}'.format(int(merchant_data.current_invoice_number) + 1)
+    try:
+        merchant_data.save()
+    except DatabaseError as save_err:
+        LOGGER.debug(save_err)
     m_return_url = reverse('ussd:return-from-pay') + stripped_match + '/'
     m_cancel_url = reverse('ussd:cancel') + stripped_match + '/'
     m_pending_url = reverse('ussd:pending') + stripped_match + '/'
@@ -202,7 +207,9 @@ def outer(request):
     LOGGER.debug('outer:')
     if request.method == 'GET':
         LOGGER.debug('GET it now:')
-        LOGGER.debug(request.GET.__dict__)
+        LOGGER.debug(request)
+        LOGGER.debug(request.scheme)
+        LOGGER.debug(request.META)
         LOGGER.debug(request.content_params)
         LOGGER.debug(request._messages)
         match_result = request.path_info
