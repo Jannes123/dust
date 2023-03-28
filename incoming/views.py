@@ -58,7 +58,10 @@ def get_insta_form(request, jamount):
     b_surname = buyer_obj.surname
     b_email = buyer_obj.email
     b_mobile = buyer_obj.mobile
-    m_tx_amount = str(jamount)
+    # todo: revisit error conditions
+    m_tx_amount_float = float(str(jamount))
+    # format to currency amount
+    m_tx_amount = "{:,.2f}".__format__(m_tx_amount_float).replace('.', '')
     # get merchant_shortcode
     try:
         m_short = MerchantData.objects.get(pk=1)
@@ -93,10 +96,13 @@ def get_insta_form(request, jamount):
     m_notify_url = jdomain + reverse('ussd:notify-after-paid') + stripped_match + '/'
     # m_email_address =
     # checksum
-    secret = '009'
-    check_calculation = "{}_{}_{}_{}_ZAR_{}" \
+    LOGGER.debug("---sending checksum sending---")
+    secret = 'c@!!@ll2023'
+    check_calculation = "{}_{}_{}_{}_ZAR_{}"\
         .format(m_uuid, m_account_uuid, m_tx_id, m_tx_amount, secret)
+    LOGGER.debug(check_calculation)
     check_calculation = check_calculation.encode('UTF-8', errors='strict')
+    LOGGER.debug(check_calculation)
     check_calculation = hashlib.md5(check_calculation).hexdigest()
     LOGGER.debug(check_calculation)
 
