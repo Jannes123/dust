@@ -61,7 +61,7 @@ def get_insta_form(request, jamount):
     # todo: revisit error conditions
     m_tx_amount_float = float(str(jamount))
     # format to currency amount
-    m_tx_amount = "{:,.2f}".__format__(m_tx_amount_float).replace('.', '')
+    m_tx_amount = ("{:,.2f}".__format__(m_tx_amount_float)).replace('.', '')
     # get merchant_shortcode
     try:
         m_short = MerchantData.objects.get(pk=1)
