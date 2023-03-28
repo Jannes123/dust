@@ -92,10 +92,10 @@ def get_insta_form(request, jamount):
     except DatabaseError as e:
         LOGGER.debug('get_insta_form: unable to retrieve entry')
         LOGGER.debug(e)
-    m_return_url = jdomain + reverse('ussd:return-from-pay') + stripped_match + '/'
-    m_cancel_url = jdomain + reverse('ussd:cancel') + stripped_match + '/'
-    m_pending_url = jdomain + reverse('ussd:pending') + stripped_match + '/'
-    m_notify_url = jdomain + reverse('ussd:notify-after-paid') + stripped_match + '/'
+    m_return_url = 'https://' + jdomain + reverse('ussd:return-from-pay') + stripped_match + '/'
+    m_cancel_url = 'https://' + jdomain + reverse('ussd:cancel') + stripped_match + '/'
+    m_pending_url = 'https://' + jdomain + reverse('ussd:pending') + stripped_match + '/'
+    m_notify_url = 'https://' + jdomain + reverse('ussd:notify-after-paid') + stripped_match + '/'
     # m_email_address =
     # checksum
     LOGGER.debug("---sending checksum sending---")
