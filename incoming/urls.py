@@ -5,7 +5,8 @@ from django.urls import re_path
 from django.urls.conf import include
 from incoming.views import index, simple_page_not_found,\
         edit_detail_datain, outer, OuterXML,\
-        pay_return, pay_notify, pay_cancel, pay_pending
+        pay_return, pay_notify, pay_cancel, pay_pending,\
+        InstaNotify
 from rest_framework.routers import DefaultRouter, SimpleRouter
 router = DefaultRouter()
 router.register("xmlapi", OuterXML, basename="out")
@@ -23,6 +24,7 @@ urlpatterns = [
     re_path(r'jpay-cancel/.{36}/$', pay_cancel, name='cancel-post'),
     re_path(r'jpay-pending/$', pay_pending, name='pending'),
     re_path(r'jpay-pending/.{36}/$', pay_pending, name='pending-post'),
+    path('rest-jpay-notify/', InstaNotify.as_view({'post': 'create'}), name='notify-rest'),
     path('outxmldoc', OuterXML.as_view({'get': 'xmlout'}), name='accept payment'),
     path('routa/', include(router.urls)),
     path('404', simple_page_not_found, name='simple_page_not_found')]
