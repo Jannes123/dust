@@ -409,8 +409,8 @@ class InstaNotify(APIView):
     def post(self, request):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
-        LOGGER.debug(request.DATA)
-        serias = PayInitSerializer(request.DATA)
+        LOGGER.debug(request.data)
+        serias = PayInitSerializer(request.data)
         if serias.is_valid():
             LOGGER.debug(serias)
             try:
