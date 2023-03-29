@@ -24,7 +24,7 @@ urlpatterns = [
     re_path(r'jpay-cancel/.{36}/$', pay_cancel, name='cancel-post'),
     re_path(r'jpay-pending/$', pay_pending, name='pending'),
     re_path(r'jpay-pending/.{36}/$', pay_pending, name='pending-post'),
-    path('rest-jpay-notify/', InstaNotify.as_view({'post': 'create'}), name='notify-rest'),
+    path('rest-jpay-notify/', InstaNotify.as_view(), name='notify-rest'),
     path('outxmldoc', OuterXML.as_view({'get': 'xmlout'}), name='accept payment'),
     path('routa/', include(router.urls)),
     path('404', simple_page_not_found, name='simple_page_not_found')]
