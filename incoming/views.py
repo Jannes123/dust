@@ -398,8 +398,6 @@ def pay_notify(request):
 
 class InstaNotify(APIView):
     """Save return data from instapay"""
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, format=None):
         """
@@ -412,13 +410,15 @@ class InstaNotify(APIView):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
         LOGGER.debug(request.DATA)
-        pi = PayInit.objects.create(request.DATA)
-        LOGGER.debug(pi)
-        try:
-            pi.save()
-        except DatabaseError as derr:
-            LOGGER.debug(derr)
-            # return
-        pb = PayBuyer.objects.create(request.DATA)
-        LOGGER.debug(pb)
-        return Response(status=status.HTTP_200_OK)
+        serias = PayInitSerializer(request.DATA)
+        if serias.is_valid():
+            LOGGER.debug(serias)
+            try:
+                serias.save()
+            except DatabaseError as derr:
+                LOGGER.debug(derr)
+                # return
+            LOGGER.debug(serias.data)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            LOGGER.debug('error: cannot save serializer')
