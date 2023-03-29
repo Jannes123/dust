@@ -385,8 +385,8 @@ def pay_notify(request):
         LOGGER.debug('POST')
         # log payment confirmation(big entry) to db.
         #LOGGER.debug(request)
-        post_data_bytes = request.read()
-        LOGGER.debug(post_data_bytes)
+        #post_data_bytes = request.read()
+        #LOGGER.debug(post_data_bytes)
         match_result = request.path_info
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
