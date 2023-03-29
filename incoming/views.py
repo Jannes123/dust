@@ -296,6 +296,7 @@ def pay_return(request):
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
         context = {'home': reverse('ussd:edit_datain')}
+        # todo:present payment and topup status
         return render(request, 'incoming/return.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
@@ -373,7 +374,7 @@ def pay_notify(request):
     LOGGER.debug('pay_notify')
     if request.method == 'GET':
         # log payment confirmation(big entry) to db.
-        LOGGER.debug('GET')
+        LOGGER.debug('GET is wrong')
         LOGGER.debug(request)
         match_result = request.path_info
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
@@ -383,6 +384,12 @@ def pay_notify(request):
         LOGGER.debug('POST')
         # log payment confirmation(big entry) to db.
         LOGGER.debug(request)
+        post_data_bytes = request.read()
+        LOGGER.debug(post_data_bytes)
+        match_result = request.path_info
+        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
+        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
+        LOGGER.debug(stripped_match)
         return NotifyXML.as_view({'post': 'create'})(request)
     else:
         LOGGER.debug('not supported')
