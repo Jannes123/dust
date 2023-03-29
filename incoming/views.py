@@ -391,7 +391,7 @@ def pay_notify(request):
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
-        return NotifyXML.as_view({'post': 'create'})(request)
+        return InstaNotify.as_view({'post': 'create'})(request)
     else:
         LOGGER.debug('not supported')
 
