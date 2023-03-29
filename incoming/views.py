@@ -6,7 +6,7 @@ from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
-    PayInit
+    PayInit, PayBuyer
 from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer, PayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
@@ -346,6 +346,7 @@ def simple_page_not_found(request, exception):
 
 
 from rest_framework import routers, serializers, viewsets
+from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
 from rest_framework.response import Response
@@ -395,25 +396,29 @@ def pay_notify(request):
         LOGGER.debug('not supported')
 
 
-class NotifyXML(viewsets.ModelViewSet):
-    queryset = PayInit.objects.all()
-    serializer_class = PayInitSerializer
-    parser_classes = (XMLParser,)
-    renderer_classes = (XMLRenderer,)
-    #lookup_field = 'pay_url'
-    LOGGER.debug('outerxml modelviewset class')
+class InstaNotify(APIView):
+    """Save return data from instapay"""
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
 
-    def xml_save_all(self, request, notify_url):
-        # merchant
-        # buyer
-        # request details
-        # payment details
-        # checksum
-        LOGGER.debug('---xml_save_all---')
-        #LOGGER.debug(kwargs)
+    def get(self, request, format=None):
+        """
+        Return a list of all notifications.
+        """
+        noties = [notify.payeeInvoiceNr for notify in PayInit.objects.all()]
+        return Response(noties)
+
+    def post(self, request):
+        """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
-        #cashdrp = kwargs['pay_url']
-        #queryset = self.get_queryset().filter(pay_url=cashdrp)
-        doc_send = self.get_object()
-        data_param = self.serializer_class(doc_send).data
-        return Response(data_param, status=status.HTTP_200_OK)
+        LOGGER.debug(request.DATA)
+        pi = PayInit.objects.create(request.DATA)
+        LOGGER.debug(pi)
+        try:
+            pi.save()
+        except DatabaseError as derr:
+            LOGGER.debug(derr)
+            # return
+        pb = PayBuyer.objects.create(request.DATA)
+        LOGGER.debug(pb)
+        return Response(status=status.HTTP_200_OK)

@@ -6,10 +6,12 @@ import logging
 
 LOGGER = logging.getLogger('django.request')
 
+
 class CodeFunctionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CodeFunction
         fields = ('call_log', 'network', 'amount', 'user_number', 'sponsor_number', 'timestamp', 'pay_url')
+
 
 class PayInitSerializer(serializers.ModelSerializer):
     class Meta:
