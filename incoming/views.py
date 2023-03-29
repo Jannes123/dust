@@ -369,7 +369,7 @@ class OuterXML(viewsets.ModelViewSet):
         data_param = self.serializer_class(doc_send).data
         return Response(data_param, status=status.HTTP_200_OK)
 
-
+@csrf_exempt
 def pay_notify(request):
     LOGGER.debug('pay_notify')
     if request.method == 'GET':
@@ -383,7 +383,7 @@ def pay_notify(request):
     elif request.method == 'POST':
         LOGGER.debug('POST')
         # log payment confirmation(big entry) to db.
-        LOGGER.debug(request)
+        #LOGGER.debug(request)
         post_data_bytes = request.read()
         LOGGER.debug(post_data_bytes)
         match_result = request.path_info
