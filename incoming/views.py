@@ -14,6 +14,7 @@ from django.urls import reverse_lazy, reverse
 from django import forms
 from django.db import DatabaseError
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.utils.decorators import method_decorator
 import json
 import datetime
 from django.http import Http404
@@ -21,6 +22,12 @@ import uuid
 import re
 from django.contrib.sites.models import Site
 from django.template.response import TemplateResponse
+from rest_framework import routers, serializers, viewsets
+from rest_framework.views import APIView
+from rest_framework_xml.parsers import XMLParser
+from rest_framework_xml.renderers import XMLRenderer
+from rest_framework.response import Response
+from rest_framework import status
 import logging
 LOGGER = logging.getLogger('django.request')
 
@@ -319,7 +326,7 @@ def pay_cancel(request):
 
 
 def pay_pending(request):
-    LOGGER.debug('pay_cancel')
+    LOGGER.debug('pay_pending')
     if request.method == 'GET':
         LOGGER.debug('GET')
         match_result = request.path_info
@@ -344,13 +351,6 @@ def simple_page_not_found(request, exception):
     LOGGER.debug('simple page not found')
     return render(request, 'incoming/page_not_found.html')
 
-
-from rest_framework import routers, serializers, viewsets
-from rest_framework.views import APIView
-from rest_framework_xml.parsers import XMLParser
-from rest_framework_xml.renderers import XMLRenderer
-from rest_framework.response import Response
-from rest_framework import status
 
 class OuterXML(viewsets.ModelViewSet):
     queryset = CodeFunction.objects.all()
@@ -406,6 +406,7 @@ class InstaNotify(APIView):
         noties = [notify.payeeInvoiceNr for notify in PayInit.objects.all()]
         return Response(noties)
 
+    @method_decorator(csrf_exempt)
     def post(self, request, ucode):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)

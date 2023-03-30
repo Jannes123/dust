@@ -10,6 +10,7 @@ from incoming.views import index, simple_page_not_found,\
 from rest_framework.routers import DefaultRouter, SimpleRouter
 router = DefaultRouter()
 router.register("xmlapi", OuterXML, basename="out")
+router.register("notifyapi", InstaNotify, basename="insta")
 app_name = 'incoming'
 urlpatterns = [
     path('', edit_detail_datain, name='edit_datain'),
