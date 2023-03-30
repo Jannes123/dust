@@ -358,7 +358,6 @@ class OuterXML(viewsets.ModelViewSet):
     parser_classes = (XMLParser,)
     renderer_classes = (XMLRenderer,)
     lookup_field = 'pay_url'
-    LOGGER.debug('OuterXML modelviewset class')
 
     def xmlout(self, request, pay_url):
         LOGGER.debug('---found view---')
@@ -373,7 +372,7 @@ class OuterXML(viewsets.ModelViewSet):
 
 class InstaNotifyView(APIView):
     """Save return data from instapay"""
-
+    LOGGER.debug('Notify view class instance created')
     def get(self, request, format=None):
         """
         Return a list of all notifications.
