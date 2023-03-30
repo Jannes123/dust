@@ -5,7 +5,7 @@ from django.urls import re_path
 from django.urls.conf import include
 from incoming.views import index, simple_page_not_found,\
         edit_detail_datain, outer, OuterXML,\
-        pay_return, pay_notify, pay_cancel, pay_pending,\
+        pay_return, pay_cancel, pay_pending,\
         InstaNotifyView
 from rest_framework.routers import DefaultRouter, SimpleRouter
 router = DefaultRouter()
