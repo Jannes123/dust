@@ -406,10 +406,10 @@ class InstaNotify(APIView):
         noties = [notify.payeeInvoiceNr for notify in PayInit.objects.all()]
         return Response(noties)
 
-    def post(self, request):
+    def post(self, request, ucode):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
-        LOGGER.debug(request.data)
+        LOGGER.debug(ucode)
         serias = PayInitSerializer(request.data)
         if serias.is_valid():
             LOGGER.debug(serias)
