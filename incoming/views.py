@@ -370,33 +370,8 @@ class OuterXML(viewsets.ModelViewSet):
         data_param = self.serializer_class(doc_send).data
         return Response(data_param, status=status.HTTP_200_OK)
 
-@csrf_exempt
-def pay_notify(request):
-    LOGGER.debug('pay_notify')
-    if request.method == 'GET':
-        # log payment confirmation(big entry) to db.
-        LOGGER.debug('GET is wrong')
-        LOGGER.debug(request)
-        match_result = request.path_info
-        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-        LOGGER.debug(stripped_match)
-    elif request.method == 'POST':
-        LOGGER.debug('POST')
-        # log payment confirmation(big entry) to db.
-        #LOGGER.debug(request)
-        #post_data_bytes = request.read()
-        #LOGGER.debug(post_data_bytes)
-        match_result = request.path_info
-        stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
-        stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
-        LOGGER.debug(stripped_match)
-        return InstaNotify.as_view()(request)
-    else:
-        LOGGER.debug('not supported')
 
-
-class InstaNotify(APIView):
+class InstaNotifyView(APIView):
     """Save return data from instapay"""
 
     def get(self, request, format=None):
