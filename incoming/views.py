@@ -373,6 +373,7 @@ class OuterXML(viewsets.ModelViewSet):
 class InstaNotifyView(APIView):
     """Save return data from instapay"""
     LOGGER.debug('Notify view class instance created')
+
     def get(self, request, format=None):
         """
         Return a list of all notifications.
@@ -386,7 +387,9 @@ class InstaNotifyView(APIView):
         LOGGER.debug(request)
         LOGGER.debug(ucode)
         LOGGER.debug("moron")
+
         serias = PayInitSerializer(request.data)
+        LOGGER.debug(serias)
         if serias.is_valid():
             LOGGER.debug(serias)
             try:
