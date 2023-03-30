@@ -358,7 +358,7 @@ class OuterXML(viewsets.ModelViewSet):
     parser_classes = (XMLParser,)
     renderer_classes = (XMLRenderer,)
     lookup_field = 'pay_url'
-    LOGGER.debug('outerxml modelviewset class')
+    LOGGER.debug('OuterXML modelviewset class')
 
     def xmlout(self, request, pay_url):
         LOGGER.debug('---found view---')
@@ -386,6 +386,7 @@ class InstaNotifyView(APIView):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
         LOGGER.debug(ucode)
+        LOGGER.debug("moron")
         serias = PayInitSerializer(request.data)
         if serias.is_valid():
             LOGGER.debug(serias)
