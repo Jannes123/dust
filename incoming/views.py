@@ -388,7 +388,7 @@ class InstaNotifyView(APIView):
         LOGGER.debug(ucode)
         LOGGER.debug("moron")
 
-        serias = PayInitSerializer(request.data)
+        serias = PayInitSerializer(data=request.data)
         LOGGER.debug(serias)
         if serias.is_valid():
             LOGGER.debug(serias)
