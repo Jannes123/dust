@@ -32,6 +32,7 @@ class PayInitSerializer(serializers.ModelSerializer):
 
 
 class ExplicitPayInitSerializer(serializers.Serializer):
+    LOGGER.debug('class episer')
     payeeUuid = serializers.CharField(max_length=36)
     payeeAccountUuid = serializers.CharField(max_length=36)
     payeeRefInfo = serializers.CharField(max_length=36)

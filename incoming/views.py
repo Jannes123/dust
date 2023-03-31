@@ -27,6 +27,7 @@ from rest_framework.views import APIView
 from rest_framework_xml.parsers import XMLParser
 from rest_framework_xml.renderers import XMLRenderer
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser, MultiPartParserError
 from rest_framework import status
 import logging
 LOGGER = logging.getLogger('django.request')
@@ -373,6 +374,7 @@ class OuterXML(viewsets.ModelViewSet):
 class InstaNotifyView(APIView):
     """Save return data from instapay"""
     LOGGER.debug('Notify view class instance created')
+    parser_classes = [FormParser, MultiPartParser]
 
     def get(self, request, format=None):
         """
@@ -404,3 +406,63 @@ class InstaNotifyView(APIView):
         else:
             LOGGER.debug('error: cannot save serializer')
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@csrf_exempt
+def pay_notify_datain(request):
+    """
+    incoming notification
+    """
+    LOGGER.debug(request.path_info)
+    if request.method == 'GET':
+        LOGGER.debug("pay_botify:GET:" + str(request.__dict__))
+        LOGGER.debug(request.content_params)
+        LOGGER.debug(request._messages)
+        LOGGER.debug('Not supported')
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+    elif request.method == 'pay_notify_datain: POST':
+        #post data received from logs:
+        #b'{}'
+        LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
+        LOGGER.debug(request.path_info)
+        LOGGER.debug(request.content_params)
+        post_data_bytes = request.read()
+        LOGGER.debug(post_data_bytes)
+        post_data = post_data_bytes.decode('utf-8')
+        notification = json.loads(post_data)
+        LOGGER.debug(notification)
+        LOGGER.debug(notification['payeeUuid'])
+        payeeUuid = notification['payeeUuid']
+        payeeAccountUuid = notification['payeeAccountUuid']
+        payeeRefInfo = notification['payeeRefInfo']
+        payeeCategory1 = notification['payeeCategory1']
+        payeeCategory2 = notification['payeeCategory2']
+        payeeCategory3 = notification['payeeCategory3']
+        payeeSiteName = notification['payeeSiteName']
+        payeeSiteReference = notification['payeeSiteReference']
+        payeeInvoiceNr = notification['payeeInvoiceNr']
+        payeeOrderNr = notification['payeeOrderNr']
+        payeeOrderItemName = notification['payeeOrderItemName']
+        payeeOrderItemDescription = notification['payeeOrderItemDescription']
+
+        try:
+            pay_notification_entry_obj = PayInit(
+                    payeeUuid=payeeUuid, payeeAccountUuid=payeeAccountUuid,
+                    payeeRefInfo=payeeRefInfo, payeeCategory1=payeeCategory1, payeeCategory2=payeeCategory2,
+                    payeeCategory3=payeeCategory3, payeeSiteName=payeeSiteName,
+                    payeeSiteReference=payeeSiteReference, payeeInvoiceNr=payeeInvoiceNr,
+                    payeeOrderNr=payeeOrderNr, payeeOrderItemName=payeeOrderItemName,
+                    payeeOrderItemDescription=payeeOrderItemDescription
+                    )
+            pay_notification_entry_obj.save()
+        except DatabaseError as e:
+            LOGGER.debug('unable to create entry')
+            LOGGER.debug(e)
+            raise Http404("cannot create entry")
+            #404 cannot create
+        # http redirect to url serving xml doc
+        # data was saved now return confirmation along with uuid
+        LOGGER.debug('notify: complete')
+        return Response(status=status.HTTP_200_OK)
+    else:
+        LOGGER.debug('wrong method: GET')
