@@ -385,12 +385,13 @@ class InstaNotifyView(APIView):
     def post(self, request, ucode):
         """save PayInit PayBuyer PayRequest PayDetails"""
         LOGGER.debug(request)
+        LOGGER.debug(request.content_type)
         LOGGER.debug(ucode)
-        LOGGER.debug("moron")
-
+        LOGGER.debug("post")
         serias = PayInitSerializer(data=request.data)
-        LOGGER.debug(serias)
+        LOGGER.debug(serias.validated_data)
         if serias.is_valid():
+            LOGGER.debug('ser data is valid')
             LOGGER.debug(serias)
             try:
                 serias.save()
@@ -401,3 +402,4 @@ class InstaNotifyView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             LOGGER.debug('error: cannot save serializer')
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
