@@ -389,8 +389,9 @@ class InstaNotifyView(APIView):
         LOGGER.debug(ucode)
         LOGGER.debug("post")
         serias = PayInitSerializer(data=request.data)
-        LOGGER.debug(serias.validated_data)
+
         if serias.is_valid():
+            LOGGER.debug(serias.validated_data)
             LOGGER.debug('ser data is valid')
             LOGGER.debug(serias)
             try:
