@@ -52,5 +52,5 @@ class ExplicitPayInitSerializer(serializers.Serializer):
 
     def __init__(self, instance=None, data=empty, **kwargs):
         LOGGER.debug("init explicit serializer")
-        super(ExplicitPayInitSerializer, self).__init__(instance=None, data=empty, **kwargs)
+        super(ExplicitPayInitSerializer, self).__init__(instance, data, **kwargs)
 
