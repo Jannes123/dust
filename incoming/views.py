@@ -8,7 +8,7 @@ from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
     PayInit, PayBuyer
 from incoming.forms import ProductionPurchaseForm
-from .serializers import CodeFunctionSerializer, PayInitSerializer
+from .serializers import CodeFunctionSerializer, ExplicitPayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django import forms
@@ -388,7 +388,7 @@ class InstaNotifyView(APIView):
         LOGGER.debug(request.content_type)
         LOGGER.debug(ucode)
         LOGGER.debug("post")
-        serias = PayInitSerializer(data=request.data)
+        serias = ExplicitPayInitSerializer(data=request.data)
         LOGGER.debug(serias.is_valid())
         if serias.is_valid():
             LOGGER.debug(serias.validated_data)

@@ -31,6 +31,21 @@ class PayInitSerializer(serializers.ModelSerializer):
                 )
 
 
+class ExplicitPayInitSerializer(serializers.Serializer):
+    payeeUuid = serializers.CharField(max_length=36)
+    payeeAccountUuid = serializers.CharField(max_length=36)
+    payeeRefInfo = serializers.CharField(max_length=36)
+    payeeCategory1 = serializers.CharField(max_length=36)
+    payeeCategory2 = serializers.CharField(max_length=36)
+    payeeCategory3 = serializers.CharField(max_length=36)
+    payeeSiteName = serializers.CharField(max_length=50)
+    payeeSiteReference = serializers.CharField(max_length=36)
+    payeeInvoiceNr = serializers.CharField(max_length=50)
+    payeeOrderNr = serializers.CharField(max_length=50)
+    payeeOrderItemName = serializers.CharField(max_length=50)
+    payeeOrderItemDescription = serializers.CharField(max_length=60)
 
-
+    def __init__(self):
+        LOGGER.debug("init explicit serializer")
+        super(ExplicitPayInitSerializer, self).__init__()
 
