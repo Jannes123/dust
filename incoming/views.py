@@ -431,6 +431,7 @@ def pay_notify_datain(request):
         post_data_bytes = request.read()
         LOGGER.debug(post_data_bytes)
         post_data = post_data_bytes.decode('utf-8')
+        LOGGER.debug(post_data)
         notification = json.loads(post_data)
         LOGGER.debug(notification)
         LOGGER.debug(notification['payeeUuid'])
