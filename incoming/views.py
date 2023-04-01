@@ -432,17 +432,22 @@ def pay_notify_datain(request):
         LOGGER.debug(post_data_bytes)
         post_data = post_data_bytes.decode('utf-8')
         LOGGER.debug(post_data)
-        notification = json.loads(post_data)
+        notification = post_data.split('&')
         LOGGER.debug(notification)
         LOGGER.debug(notification['payeeUuid'])
         payeeUuid = notification['payeeUuid']
         payeeAccountUuid = notification['payeeAccountUuid']
         payeeRefInfo = notification['payeeRefInfo']
-        payeeCategory1 = notification['payeeCategory1']
-        payeeCategory2 = notification['payeeCategory2']
-        payeeCategory3 = notification['payeeCategory3']
-        payeeSiteName = notification['payeeSiteName']
-        payeeSiteReference = notification['payeeSiteReference']
+        if 'payeeCategory1' in notification.keys():
+            payeeCategory1 = notification['payeeCategory1']
+        if 'payeeCategory2' in notification.keys():
+            payeeCategory2 = notification['payeeCategory2']
+        if 'payeeCategory3' in notification.keys():
+            payeeCategory3 = notification['payeeCategory3']
+        if 'payeeSiteName' in notification.keys():
+            payeeSiteName = notification['payeeSiteName']
+        if 'payeeSiteReference' in notification.keys():
+            payeeSiteReference = notification['payeeSiteReference']
         payeeInvoiceNr = notification['payeeInvoiceNr']
         payeeOrderNr = notification['payeeOrderNr']
         payeeOrderItemName = notification['payeeOrderItemName']
