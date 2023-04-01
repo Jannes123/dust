@@ -343,7 +343,7 @@ def pay_pending(request):
 
 def index(request):
     LOGGER.debug(request.GET)
-    ingress_list = DataIn.objects.order_by('tag_name')[:5]
+    ingress_list = PayInit.objects.all('tag_name')[:5]
     context = {'ingress_list': ingress_list}
     return render(request, 'incoming/index.html', context)
 
