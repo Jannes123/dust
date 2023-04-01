@@ -460,7 +460,7 @@ def pay_notify_datain(request):
         except DatabaseError as e:
             LOGGER.debug('unable to create entry')
             LOGGER.debug(e)
-            raise Http404("cannot create entry")
+            #raise Http404("cannot create entry")
             #404 cannot create
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
