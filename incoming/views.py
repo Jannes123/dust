@@ -421,7 +421,7 @@ def pay_notify_datain(request):
         LOGGER.debug(request._messages)
         LOGGER.debug('Not supported')
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-    elif request.method == 'pay_notify_datain: POST':
+    elif request.method == 'POST':
         #post data received from logs:
         #b'{}'
         LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
