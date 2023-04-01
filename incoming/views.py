@@ -415,6 +415,7 @@ def pay_notify_datain(request):
     incoming notification
     """
     LOGGER.debug(request.path_info)
+    LOGGER.debug(request.method)
     if request.method == 'GET':
         LOGGER.debug("pay_botify:GET:" + str(request.__dict__))
         LOGGER.debug(request.content_params)
@@ -466,4 +467,5 @@ def pay_notify_datain(request):
         LOGGER.debug('notify: complete')
         return Response(status=status.HTTP_200_OK)
     else:
-        LOGGER.debug('wrong method: GET')
+
+        LOGGER.debug('wrong method')
