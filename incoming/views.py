@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils.decorators import method_decorator
 import json
 import datetime
-from django.http import Http404
+from django.http import Http404, HttpResponse
 import uuid
 import re
 from django.contrib.sites.models import Site
@@ -481,7 +481,8 @@ def pay_notify_datain(request):
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
         LOGGER.debug('notify: complete')
-        return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
+        #return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
+        return HttpResponse()
     else:
 
         LOGGER.debug('wrong method')
