@@ -6,7 +6,7 @@ from django.urls.conf import include
 from incoming.views import simple_page_not_found,\
         edit_detail_datain, outer, OuterXML,\
         pay_return, pay_cancel, pay_pending,\
-        InstaNotifyView, pay_notify_datain
+        InstaNotifyView, pay_notify_datain, dash
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register("xmlapi", OuterXML, basename="out")
@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'jpay-cancel/.{36}/$', pay_cancel, name='cancel-post'),
     re_path(r'jpay-pending/$', pay_pending, name='pending'),
     re_path(r'jpay-pending/.{36}/$', pay_pending, name='pending-post'),
+    re_path(r'^dash/$', dash, name='dash'),
     path('routa/', include(router.urls)),
     path('404', simple_page_not_found, name='simple_page_not_found')]
 handler404 = 'incoming.views.simple_page_not_found'

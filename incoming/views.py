@@ -347,6 +347,36 @@ def index(request):
     context = {'ingress_list': ingress_list}
     return render(request, 'incoming/index.html', context)
 
+def dash(request):
+    """dashboard displaying balances statuses etc."""
+    if request.method == 'GET':
+        # Fetching Balance
+        import requests
+        import xml.etree.ElementTree as ET
+        url = "https://ws.freepaid.co.za/airtimeplus/"
+        headers = {'content-type': 'text/xml'}
+        body = f"""
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:air="https://ws.freepaid.co.za/airtimeplus/">
+           <soapenv:Header/>
+           <soapenv:Body>
+              <air:fetchBalance>
+                 <request>
+                    <user>{'5883139'}</user>
+                    <pass>{'Free123'}</pass>
+                 </request>
+              </air:fetchBalance>
+           </soapenv:Body>
+        </soapenv:Envelope>
+        """
+        response = requests.post(url, data=body, headers=headers)
+        root = ET.fromstring(response.text)
+
+        balance = root.find(".//balance").text
+        context = {'airtime_balance': balance}
+        return render(request, 'incoming/dash.html', context)
+    elif request.method == 'POST':
+        LOGGER.debug('POST')
+
 
 def simple_page_not_found(request, exception):
     LOGGER.debug(request.GET)
