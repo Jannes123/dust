@@ -103,7 +103,8 @@ def get_insta_form(request, jamount):
     m_return_url = 'https://' + jdomain + reverse('ussd:return-from-pay') + stripped_match + '/'
     m_cancel_url = 'https://' + jdomain + reverse('ussd:cancel') + stripped_match + '/'
     m_pending_url = 'https://' + jdomain + reverse('ussd:pending') + stripped_match + '/'
-    m_notify_url = 'https://' + jdomain + reverse('ussd:notify-rest-get') + stripped_match + '/'
+    #m_notify_url = 'https://' + jdomain + reverse('ussd:notify-rest-get') + stripped_match + '/'
+    m_notify_url = 'https://' + jdomain + reverse('ussd:return-from-pay-simple') + stripped_match + '/'
     # m_email_address =
     # checksum
     LOGGER.debug("---sending checksum sending---")
