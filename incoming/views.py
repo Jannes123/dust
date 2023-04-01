@@ -440,14 +440,24 @@ def pay_notify_datain(request):
         payeeRefInfo = notification['payeeRefInfo']
         if 'payeeCategory1' in notification.keys():
             payeeCategory1 = notification['payeeCategory1']
+        else:
+            payeeCategory1 = ''
         if 'payeeCategory2' in notification.keys():
             payeeCategory2 = notification['payeeCategory2']
+        else:
+            payeeCategory2 = ''
         if 'payeeCategory3' in notification.keys():
             payeeCategory3 = notification['payeeCategory3']
+        else:
+            payeeCategory3 = ''
         if 'payeeSiteName' in notification.keys():
             payeeSiteName = notification['payeeSiteName']
+        else:
+            payeeSiteName = ''
         if 'payeeSiteReference' in notification.keys():
             payeeSiteReference = notification['payeeSiteReference']
+        else:
+            payeeSiteReference = ''
         payeeInvoiceNr = notification['payeeInvoiceNr']
         payeeOrderNr = notification['payeeOrderNr']
         payeeOrderItemName = notification['payeeOrderItemName']
