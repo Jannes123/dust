@@ -347,6 +347,7 @@ def index(request):
     context = {'ingress_list': ingress_list}
     return render(request, 'incoming/index.html', context)
 
+
 def dash(request):
     """dashboard displaying balances statuses etc."""
     if request.method == 'GET':
@@ -376,7 +377,10 @@ def dash(request):
         return render(request, 'incoming/dash.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
-
+"""
+from incoming import incomig_utils
+incomig_utils.buy_airtime(2,'0792217404')
+"""
 
 def simple_page_not_found(request, exception):
     LOGGER.debug(request.GET)
