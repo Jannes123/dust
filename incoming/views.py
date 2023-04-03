@@ -380,6 +380,7 @@ def dash(request):
 """
 from incoming import incomig_utils
 incomig_utils.buy_airtime(2,'0792217404')
+https://github.com/Jannes123/dialermaps/blob/master/maps/jutils.py  check cron setup for django
 """
 
 def simple_page_not_found(request, exception):
