@@ -11,6 +11,19 @@ import logging
 LOGGER = logging.getLogger('django.request')
 
 
+class JCronJob(CronJobBase):
+    RUN_EVERY_MINS = 2 # every 2 mins
+
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'maps.my_cron_jobaofhti'    # a unique code
+
+    def do(self):
+        """check all sessions for activity and update db
+        only applies to registered and logged in users
+        """
+        LOGGER.debug('Jcron running..')
+        LOGGER.debug('logout all users')
+
 def buy_airtime(amount, destination):
     LOGGER.debug('buy_aitrtime:')
     assert(amount!=None)

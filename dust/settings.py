@@ -57,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 CRON_CLASSES = [
-    "maps.jutils.JCronJob",
+    "maps.incoming_utils.JCronJob",
 ]
 
 ROOT_URLCONF = 'dust.urls'
