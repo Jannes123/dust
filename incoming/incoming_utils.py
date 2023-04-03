@@ -27,6 +27,7 @@ class JCronJob(CronJobBase):
         LOGGER.debug('check db for uncompleted tasks')
 
 
+
 def buy_airtime(amount, destination):
     LOGGER.debug('buy_aitrtime:')
     assert(amount!=None)
