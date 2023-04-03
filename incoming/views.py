@@ -347,6 +347,7 @@ def index(request):
     context = {'ingress_list': ingress_list}
     return render(request, 'incoming/index.html', context)
 
+
 def dash(request):
     """dashboard displaying balances statuses etc."""
     if request.method == 'GET':
@@ -376,7 +377,11 @@ def dash(request):
         return render(request, 'incoming/dash.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
-
+"""
+from incoming import incomig_utils
+incomig_utils.buy_airtime(2,'0792217404')
+https://github.com/Jannes123/dialermaps/blob/master/maps/jutils.py  check cron setup for django
+"""
 
 def simple_page_not_found(request, exception):
     LOGGER.debug(request.GET)
