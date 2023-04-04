@@ -17,7 +17,7 @@ class CodeFunction(models.Model):
     user_number = models.CharField(max_length=32)
     sponsor_number = models.CharField(max_length=32)
     timestamp = models.DateTimeField(auto_now=True)
-    pay_url = models.CharField(default = uuid.uuid4, max_length=36)
+    pay_url = models.CharField(default=uuid.uuid4, max_length=36)
 
     class Meta:
         verbose_name_plural = "incoming raw-data type custom"

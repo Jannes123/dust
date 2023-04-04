@@ -532,8 +532,12 @@ def pay_notify_datain(request):
             LOGGER.debug(e)
 
         rs = notification['requestStatus']
+        rsx = ''
+        for x in PayRequest.paychoices:
+            if x[1] == rs:
+                rsx = x[0]
         try:
-            req = PayRequest(requestStatus=rs, requestTokenId=requestTokenId,
+            req = PayRequest(requestStatus=rsx, requestTokenId=requestTokenId,
                              requestAmount=requestAmount,
                              init=pne)
             req.save()
