@@ -6,7 +6,7 @@ from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
-    PayInit, PayBuyer
+    PayInit, PayBuyer, PayRequest
 from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer, ExplicitPayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
@@ -35,7 +35,9 @@ LOGGER = logging.getLogger('django.request')
 
 #not intended as view only utility function for building a large form
 def get_insta_form(request, jamount):
-    """utility function for building a large form"""
+    """utility function for building a large form
+        also creates entries in db for tracking requests
+    """
     LOGGER.debug('get instapay data:')
     m_site_name = "pleasetopmeup"
     m_site_reference = "cloud"
@@ -163,7 +165,6 @@ def get_insta_form(request, jamount):
     LOGGER.debug('tried binding:')
     LOGGER.debug(insta_form_obj.is_bound)
     LOGGER.debug(insta_form_obj)
-
     return insta_form_obj
 
 #ussd first phase
@@ -215,7 +216,7 @@ def edit_detail_datain(request):
             #404 cannot create
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
-        LOGGER.debug('edit_detail_datain: phase1 complete')
+        LOGGER.debug('edit_detail_datain: phase1 complete, using rest to lookup and return xml from this entry')
         return OuterXML.as_view({'post': 'retrieve'})(request, pay_url=val_pay_url)
     else:
         LOGGER.debug('wrong method: GET')
@@ -287,6 +288,7 @@ def outer(request):
             LOGGER.debug('second phase complete')
             insta = get_insta_form(request, jamount=result.amount)
             context.update({'insta': insta})
+            # also create request
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
             new_form = ProductionPurchaseForm(request.POST)
@@ -497,7 +499,8 @@ def pay_notify_datain(request):
         payeeOrderNr = notification['payeeOrderNr']
         payeeOrderItemName = notification['payeeOrderItemName']
         payeeOrderItemDescription = notification['payeeOrderItemDescription']
-
+        requestTokenId = notification['requestTokenId']
+        requestAmount = notification['requestAmount']
         try:
             pay_notification_entry_obj = PayInit(
                     payeeUuid=payeeUuid, payeeAccountUuid=payeeAccountUuid,
@@ -509,13 +512,33 @@ def pay_notify_datain(request):
                     )
             pay_notification_entry_obj.save()
         except DatabaseError as e:
-            LOGGER.debug('unable to create entry')
+            LOGGER.debug('PayInit unable to create entry')
             LOGGER.debug(e)
             #raise Http404("cannot create entry")
             #404 cannot create
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
         LOGGER.debug('notify: complete')
+        # todo: checksum
+
+        # update/create request entry for init, async processes continue app process
+        # lookup pay_notification_entry_obj from db for linking
+        try:
+            pne = PayInit.objects.get(payeeRefInfo=payeeRefInfo)
+        except DatabaseError as e:
+            LOGGER.debug('PayInit no entry found')
+            LOGGER.debug(e)
+
+        rs = notification['requestStatus']
+        try:
+            req = PayRequest(requestStatus=rs, requestTokenId=requestTokenId,
+                             requestAmount=requestAmount,
+                             init=pne)
+            req.save()
+        except DatabaseError as e:
+            LOGGER.debug('payRequest unable to create entry')
+            LOGGER.debug(e)
+
         #return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
         return HttpResponse()
     else:
