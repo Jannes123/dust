@@ -7,7 +7,10 @@ import uuid
 
 
 class CodeFunction(models.Model):
-    """ussd integration"""
+    """ussd integration: used for first sponsor related http request
+        this entry is first saved from ussd portal then immediately returned
+        by rest framework as xml response.
+    """
     call_log = models.IntegerField()
     network = models.CharField(max_length=32)
     amount = models.IntegerField()
@@ -27,8 +30,28 @@ class CodeFunction(models.Model):
         return r'/outer/{}/'.format(self.pay_url)
 
 
+class ProductionPurchase(models.Model):
+    """
+    Second phase data is captured from second user via http form.
+    """
+    name = models.CharField(max_length=50, blank=True)
+    surname = models.CharField(max_length=50)
+    email = models.EmailField(max_length=254)
+    mobile = models.CharField(max_length=14)
+    # todo: add network attr like above
+    amount = models.DecimalField(max_digits=5, decimal_places=2)
+    original_url_unique = models.ForeignKey(
+        'CodeFunction',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+
 class PayInit(models.Model):
-    """instapay info return path"""
+    """instapay info return path
+    Notification from notify url populates this table's entries.
+    payeeRefInfo must be equal to ‘m_tx_order_nr’ from request.
+    """
     payeeUuid = models.CharField(max_length=36)
     payeeAccountUuid = models.CharField(max_length=36)
     payeeRefInfo = models.CharField(max_length=36)
@@ -52,6 +75,9 @@ class PayBuyer(models.Model):
 
 
 class PayRequest(models.Model):
+    """Should be completed upon notification return from instapay.
+        A pending request means ptmu is waiting on another system for updates.
+    """
     COMPLETED = 'C'
     EXPIRED = 'E'
     PENDING = 'P'
@@ -63,10 +89,15 @@ class PayRequest(models.Model):
             ('X', 'CANCELLED')
             ]
     paychoicedefault = PENDING
-    requestTokenId = models.CharField(max_length=20)
-    requestAmount = models.DecimalField(max_digits=5, decimal_places=2)
-    requestCurrency = models.CharField(max_length=3)
-    requestStatus = models.CharField(max_length=20, choices=paychoices, default=paychoicedefault)
+    requestTokenId = models.CharField(max_length=20, blank=True)
+    requestAmount = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
+    requestCurrency = models.CharField(max_length=3, default='ZAR', blank=True)
+    requestStatus = models.CharField(max_length=20, choices=paychoices, default=paychoicedefault, blank=True)
+    init = models.ForeignKey(
+        'PayInit',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )# payeeRefInfo must be equal to ‘m_tx_order_nr’ from request.
 
     def get_absolute_url(self):
         return r'/pay-request/{}/'.format(self.requestTokenId)
@@ -97,16 +128,4 @@ class MerchantData(models.Model):
     merchant_shortcode = models.CharField(max_length=36, null=True, blank=True)#merchant shortcode allocated by trustlink
     current_invoice_number = models.IntegerField()
 
-
-class ProductionPurchase(models.Model):
-    name = models.CharField(max_length=50, blank=True)
-    surname = models.CharField(max_length=50)
-    email = models.EmailField(max_length=254)
-    mobile = models.CharField(max_length=14)
-    amount = models.DecimalField(max_digits=5, decimal_places=2)
-    original_url_unique = models.ForeignKey(
-        'CodeFunction',
-        on_delete=models.CASCADE,
-        null=True, blank=True
-    )
 
