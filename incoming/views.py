@@ -516,6 +516,8 @@ def pay_notify_datain(request):
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
         LOGGER.debug('notify: complete')
+        LOGGER.debug('payeeRefInfo:'+str(payeeRefInfo))
+        LOGGER.debug('must be equal to m_tx_order_nr')
         #return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
         return HttpResponse()
     else:
