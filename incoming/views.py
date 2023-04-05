@@ -532,11 +532,13 @@ def pay_notify_datain(request):
             LOGGER.debug(e)
 
         rs = notification['requestStatus']
+        LOGGER.debug('rs:' + rs)
         rsx = ''
         for x in PayRequest.paychoices:
             if x[1] == rs:
-                rsx = x[0]
+                rsx = str(x[0])
         try:
+            #pr = PayRequest(requestStatus='C', requestTokenId='3070369685', requestAmount='44.00', init=pi)
             req = PayRequest(requestStatus=rsx, requestTokenId=requestTokenId,
                              requestAmount=requestAmount,
                              init=pne)

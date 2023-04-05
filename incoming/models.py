@@ -92,7 +92,7 @@ class PayRequest(models.Model):
     requestTokenId = models.CharField(max_length=20, blank=True)
     requestAmount = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
     requestCurrency = models.CharField(max_length=3, default='ZAR', blank=True)
-    requestStatus = models.CharField(max_length=20, choices=paychoices, default=paychoicedefault, blank=True)
+    requestStatus = models.CharField(max_length=1, choices=paychoices, default=paychoicedefault, blank=False)
     init = models.ForeignKey(
         'PayInit',
         on_delete=models.CASCADE,
