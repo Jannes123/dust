@@ -6,7 +6,7 @@ from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
-    PayInit, PayBuyer, PayRequest
+    PayInit, PayBuyer, PayRequest, PayDetails
 from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer, ExplicitPayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils.decorators import method_decorator
 import json
 import datetime
+from urllib.parse import unquote
 from django.http import Http404, HttpResponse
 import uuid
 import re
@@ -501,6 +502,7 @@ def pay_notify_datain(request):
         payeeOrderItemDescription = notification['payeeOrderItemDescription']
         requestTokenId = notification['requestTokenId']
         requestAmount = notification['requestAmount']
+        LOGGER.debug('requestAmount:'+str(requestAmount))
         try:
             pay_notification_entry_obj = PayInit(
                     payeeUuid=payeeUuid, payeeAccountUuid=payeeAccountUuid,
@@ -516,20 +518,56 @@ def pay_notify_datain(request):
             LOGGER.debug(e)
             #raise Http404("cannot create entry")
             #404 cannot create
-        # http redirect to url serving xml doc
-        # data was saved now return confirmation along with uuid
-        LOGGER.debug('notify: complete')
-        LOGGER.debug('payeeRefInfo:'+str(payeeRefInfo))
-        LOGGER.debug('must be equal to m_tx_order_nr')
         # todo: checksum
+        paymentSystemReference = notification['paymentSystemReference']
+        paymentAmount = Decimal(notification['paymentAmount'])
+        LOGGER.debug('paymentAmount:' + str(paymentAmount))
+        paymentCurrency=notification['paymentCurrency']
+        paymentDateTime = unquote(notification['paymentDateTime'])
+        # and now ISO*8*6*0*1 yyyy-mm-dd hh:mm:ss
+        # '2023-04-05T16:51:27.978Z'
+        pdsplit = paymentDateTime.split('.')[0]
+        # todo: match '2023-04-05T16:51:27' exactly instead of split
+        t_stripped = datetime.datetime.fromisoformat(pdsplit)
+        # now add utc because string had Z designation originally
+        # datetime.datetime(2023, 4, 5, 16, 51, 27, tzinfo=datetime.timezone.utc)
+        t_stripped.replace(tzinfo=datetime.timezone.utc)
+        LOGGER.debug(t_stripped)
 
-        # update/create request entry for init, async processes continue app process
+        pt = notification['paymentType']
+        LOGGER.debug('pt:' + pt)
+        ptx = ''
+        for x in PayDetails.detailchoices:
+            if x[1] == pt:
+                ptx = x[0]
+
+        pm = notification['paymentMethod']# 'CARD'
+        LOGGER.debug('pm:' + pm)
+        pmx = ''
+        for x in PayDetails.methodchoices:
+            if x[1] == pm:
+                pmx = str(x[0])
+
         # lookup pay_notification_entry_obj from db for linking
         try:
             pne = PayInit.objects.get(payeeRefInfo=payeeRefInfo)
         except DatabaseError as e:
             LOGGER.debug('PayInit no entry found')
             LOGGER.debug(e)
+
+        try:
+            pd = PayDetails(paymentSystemReference=paymentSystemReference,
+                            paymentAmount=paymentAmount,
+                            paymentCurrency=paymentCurrency,
+                            paymentDateTime=t_stripped,
+                            paymentType=paymentType,
+                            paymentMethod=pmx,
+                            init=pne
+                            )
+            pd.save()
+        except DatabaseError as pderr:
+            LOGGER.debug(pderr)
+        # update/create request entry for init, async processes continue app process
 
         rs = notification['requestStatus']
         LOGGER.debug('rs:' + rs)

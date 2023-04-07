@@ -98,12 +98,18 @@ class PayRequest(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True
     )# payeeRefInfo must be equal to ‘m_tx_order_nr’ from request.
+    pay_details = models.ForeignKey(
+        'PayDetails',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
     def get_absolute_url(self):
         return r'/pay-request/{}/'.format(self.requestTokenId)
 
 
 class PayDetails(models.Model):
+    """additional info on transaction used for uniquely id of transactions"""
     detailchoices = [('D', 'DEPOSIT'), ('R', 'RECEIPT')]
     methodchoices = [('Card', 'CARD'),
                      ('Card Credit', 'CARD CREDIT'),
@@ -118,6 +124,11 @@ class PayDetails(models.Model):
     paymentDateTime = models.DateTimeField(auto_now=True)
     paymentType = models.CharField(max_length=10, choices=detailchoices)
     paymentMethod = models.CharField(max_length=12, choices=methodchoices)
+    init = models.ForeignKey(
+        'PayInit',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
 
 class MerchantData(models.Model):
