@@ -98,11 +98,6 @@ class PayRequest(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True
     )# payeeRefInfo must be equal to ‘m_tx_order_nr’ from request.
-    pay_details = models.ForeignKey(
-        'PayDetails',
-        on_delete=models.CASCADE,
-        null=True, blank=True
-    )
 
     def get_absolute_url(self):
         return r'/pay-request/{}/'.format(self.requestTokenId)
