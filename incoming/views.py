@@ -560,7 +560,7 @@ def pay_notify_datain(request):
                             paymentAmount=paymentAmount,
                             paymentCurrency=paymentCurrency,
                             paymentDateTime=t_stripped,
-                            paymentType=paymentType,
+                            paymentType=ptx,
                             paymentMethod=pmx,
                             init=pne
                             )
