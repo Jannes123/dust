@@ -6,7 +6,7 @@ from decimal import *
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from incoming.models import CodeFunction, ProductionPurchase, MerchantData,\
-    PayInit, PayBuyer, PayRequest, PayDetails
+    PayInit, PayBuyer, PayRequest, PayDetails, ProcessingPurchase
 from incoming.forms import ProductionPurchaseForm
 from .serializers import CodeFunctionSerializer, ExplicitPayInitSerializer
 from django.http import HttpResponse, HttpResponseRedirect
@@ -289,7 +289,18 @@ def outer(request):
             m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
             insta = get_insta_form(request, jamount=result.amount, m_tx_order_nr=m_tx_order_nr)
             context.update({'insta': insta})
-            # also create request
+            # also create request processing purchase with status processing and user number
+            # the amount carried on to other phases is the amount sponsor is willing to pay
+            pp = ProcessingPurchase(status='P',
+                                    number=nr.user_number,
+                                    network=nr.network,
+                                    amount=result.amount
+                                    )
+            try:
+                pp.save()
+            except DatabaseError as pperr:
+                LOGGER.debug(pperr)
+                LOGGER.debug('ProcessingPurchase cannot create entry.')
             return render(request, 'incoming/proceed_to_payment.html', context)
         else:
             new_form = ProductionPurchaseForm(request.POST)
