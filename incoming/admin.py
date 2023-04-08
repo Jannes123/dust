@@ -45,4 +45,4 @@ admin.site.register(PayDetails, PayDetailsAdmin)
 admin.site.register(MerchantData, MerchantDataAdmin)
 admin.site.register(ProductionPurchase, ProductionPurchaseAdmin)
 
-admin.site.resister(ProcessingPurchase, ProcessingPurchaseAdmin)
+admin.site.register(ProcessingPurchase, ProcessingPurchaseAdmin)
