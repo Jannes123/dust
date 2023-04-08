@@ -294,7 +294,8 @@ def outer(request):
             pp = ProcessingPurchase(status='P',
                                     number=nr.user_number,
                                     network=nr.network,
-                                    amount=result.amount
+                                    amount=result.amount,
+                                    original_ussd=nr
                                     )
             try:
                 pp.save()

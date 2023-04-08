@@ -145,3 +145,8 @@ class ProcessingPurchase(models.Model):
     number = models.CharField(max_length=36)
     network = models.CharField(max_length=36)
     amount = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
+    original_ussd = models.OneToOneField(
+        'CodeFunction',
+        on_delete=models.DO_NOTHING,
+        null=True, blank=False
+    )
