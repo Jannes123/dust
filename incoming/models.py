@@ -9,7 +9,7 @@ import uuid
 class CodeFunction(models.Model):
     """ussd integration: used for first sponsor related http request
         this entry is first saved from ussd portal then immediately returned
-        by rest framework as xml response.
+        by rest framework as a link to xml response for sms.
     """
     call_log = models.IntegerField()
     network = models.CharField(max_length=32)
@@ -37,6 +37,7 @@ class ProductionPurchase(models.Model):
     name = models.CharField(max_length=50, blank=True)
     surname = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
+    # sponsor nr
     mobile = models.CharField(max_length=14)
     # todo: add network attr like above
     amount = models.DecimalField(max_digits=5, decimal_places=2)
@@ -45,7 +46,7 @@ class ProductionPurchase(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True
     )
-
+    
 
 class PayInit(models.Model):
     """instapay info return path
@@ -54,7 +55,7 @@ class PayInit(models.Model):
     """
     payeeUuid = models.CharField(max_length=36)
     payeeAccountUuid = models.CharField(max_length=36)
-    payeeRefInfo = models.CharField(max_length=36)
+    payeeRefInfo = models.CharField(max_length=36)# must be equal to ‘m_tx_order_nr’ in insta request data
     payeeCategory1 = models.CharField(max_length=36)
     payeeCategory2 = models.CharField(max_length=36)
     payeeCategory3 = models.CharField(max_length=36)
@@ -82,11 +83,13 @@ class PayRequest(models.Model):
     EXPIRED = 'E'
     PENDING = 'P'
     CANCELLED = 'X'
+    SENT = 'S'
     paychoices = [
             ('C', 'COMPLETED'),
             ('E', 'EXPIRED'),
             ('P', 'PENDING'),
-            ('X', 'CANCELLED')
+            ('X', 'CANCELLED'),
+            ('S', 'SENT')
             ]
     paychoicedefault = PENDING
     requestTokenId = models.CharField(max_length=20, blank=True)
@@ -135,3 +138,10 @@ class MerchantData(models.Model):
     current_invoice_number = models.IntegerField()
 
 
+class ProcessingPurchase(models.Model):
+    """Gather data async for buying airtime, entries deleted after purchase processed"""
+    statuschoices = [('D', 'DONE'), ('P', 'PROCESSING')]
+    status = models.CharField(max_length=36)
+    number = models.CharField(max_length=36)
+    network = models.CharField(max_length=36)
+    amount = models.DecimalField(max_digits=5, decimal_places=2, blank=False)

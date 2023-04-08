@@ -35,7 +35,7 @@ LOGGER = logging.getLogger('django.request')
 
 
 #not intended as view only utility function for building a large form
-def get_insta_form(request, jamount):
+def get_insta_form(request, jamount, m_tx_order_nr):
     """utility function for building a large form
         also creates entries in db for tracking requests
     """
@@ -86,7 +86,6 @@ def get_insta_form(request, jamount):
         merchant_data = m_short
     m_uuid = merchant_data.merchant_uuid
     m_account_uuid = merchant_data.merchant_account_uuid
-    m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
     m_tx_id = uuid.uuid4()  # spec in doc 36 chars/string len of 36
     m_tx_currency = 'ZAR'  # update to dynamic possibly later
     m_tx_item_name = 'Airtime'
@@ -251,7 +250,7 @@ def outer(request):
             LOGGER.debug('unable to retrieve entry')
             LOGGER.debug(e)
             raise Http404("cannot retrieve entry")
-        # use reverse and config in urls.py to 
+        # use reverse and config in urls.py to
         # call OuterXML restful interface detail method with arguments
         url_data = jdomain + reverse('incoming:out-detail', kwargs={'pay_url': nr.pay_url})
         LOGGER.debug(url_data)
@@ -287,7 +286,8 @@ def outer(request):
             #next view to redirect to success page/instapay
             context = {}
             LOGGER.debug('second phase complete')
-            insta = get_insta_form(request, jamount=result.amount)
+            m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
+            insta = get_insta_form(request, jamount=result.amount, m_tx_order_nr=m_tx_order_nr)
             context.update({'insta': insta})
             # also create request
             return render(request, 'incoming/proceed_to_payment.html', context)
