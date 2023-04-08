@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from incoming.models import CodeFunction, PayInit, PayBuyer, PayRequest, PayDetails, MerchantData, ProductionPurchase
+from incoming.models import CodeFunction, PayInit, PayBuyer,\
+    PayRequest, PayDetails, MerchantData,\
+    ProductionPurchase, ProcessingPurchase
 
 
 class CodeFunctionAdmin(admin.ModelAdmin):
@@ -32,6 +34,9 @@ class ProductionPurchaseAdmin(admin.ModelAdmin):
     list_display = ('name', 'surname', 'email', 'mobile')
 
 
+class ProcessingPurchaseAdmin(admin.ModelAdmin):
+    list_display = ('status', 'number', 'amount')
+
 admin.site.register(CodeFunction, CodeFunctionAdmin)
 admin.site.register(PayInit, PayInitAdmin)
 admin.site.register(PayBuyer, PayBuyerAdmin)
@@ -40,3 +45,4 @@ admin.site.register(PayDetails, PayDetailsAdmin)
 admin.site.register(MerchantData, MerchantDataAdmin)
 admin.site.register(ProductionPurchase, ProductionPurchaseAdmin)
 
+admin.site.resister(ProcessingPurchase, ProcessingPurchaseAdmin)

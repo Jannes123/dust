@@ -14,17 +14,16 @@ LOGGER.debug(sys.path)
 
 
 class JCronJob(CronJobBase):
-    RUN_EVERY_MINS = 2 # every 2 mins
+    RUN_EVERY_MINS = 3 # every 2 mins
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'incoming.my_cron_jobaofhti'    # a unique code
 
     def do(self):
-        """check all sessions for activity and update db
-        only applies to registered and logged in users
+        """check all ProcessingPurchase for activity and update db
         """
         LOGGER.debug('Jcron running..')
-        LOGGER.debug('check db for uncompleted tasks')
+        LOGGER.debug('check db for uncompleted purchases')
 
 
 def buy_airtime(amount, destination):
