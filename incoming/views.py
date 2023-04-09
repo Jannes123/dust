@@ -291,7 +291,8 @@ def outer(request):
             context.update({'insta': insta})
             # also create request processing purchase with status processing and user number
             # the amount carried on to other phases is the amount sponsor is willing to pay
-            pp = ProcessingPurchase(status='P',
+            # order_nr is updated by async processes
+            pp = ProcessingPurchase(status='I',
                                     number=nr.user_number,
                                     network=nr.network,
                                     amount=result.amount,

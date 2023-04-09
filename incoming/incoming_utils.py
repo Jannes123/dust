@@ -67,7 +67,7 @@ class JCronJob(CronJobBase):
                 # todo: raise exception and handle here for purchase error
                 try:
                     jorder_nr = buy_airtime(amount=processx.amount, number=processx.number, network=processx.network)
-                except Htt:
+                except ConnectionError as exc:
                     LOGGER.debug('cannot buy airtime reliably')
                 processx.order_nr = jorder_nr
 
