@@ -55,14 +55,15 @@ class JCronJob(CronJobBase):
         LOGGER.debug('check db for uncompleted purchases')
         temp_holder = ProcessingPurchase.objects.all()
         for processx in temp_holder:
-            if processx.status == 'DONE':
+            if processx.status == 'D':
                 processx.delete()
-            elif processx.status == 'PROCESSING':
+            elif processx.status == 'P':
                 #check if airtime is on acc
                 report = checking_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
-            elif processx.status == 'INIT':
-                processx.status = 'PROCESSING'
+                #todo: if success move to done
+            elif processx.status == 'I':
+                processx.status = 'P'
                 # buy airtime
                 # todo: raise exception and handle here for purchase error
                 try:
