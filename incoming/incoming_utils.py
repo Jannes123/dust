@@ -54,14 +54,17 @@ class JCronJob(CronJobBase):
         """
         LOGGER.debug('Jcron running..')
         LOGGER.debug('check db for uncompleted purchases')
-        temp_holder = ProcessingPurchase.objects.all()
+        try:
+            temp_holder = ProcessingPurchase.objects.all()
+        except DatabaseError as perr:
+            LOGGER.debug(perr)
         for processx in temp_holder:
             if processx.status == 'D':
                 LOGGER.debug('***servicing done purchase')
                 processx.delete()
             elif processx.status == 'P':
                 LOGGER.debug('servicing processing purchase')
-                #check if airtime is on acc
+                #check if airtime is on cellphone account
                 report = checking_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
                 #todo: if success move to done
@@ -75,14 +78,19 @@ class JCronJob(CronJobBase):
                 # buy airtime
                 # todo: raise exception and handle here for purchase error
                 try:
+                    LOGGER.debug('buy airtime try:')
                     jorder_nr = buy_airtime(amount=processx.amount, number=processx.number, network=processx.network)
                 except ConnectionError as exc:
                     LOGGER.debug('cannot buy airtime reliably')
                 processx.order_nr = jorder_nr
+                try:
+                    processx.save()
+                except DatabaseError as derrd:
+                    LOGGER.debug(derrd)
 
 
 def buy_airtime(amount, destination, network, process):
-    LOGGER.debug('buy_aitrtime:')
+    LOGGER.debug('buy_aitrtime function')
     assert(amount!=None)
     assert(destination!=None)
     assert(network!=None)
@@ -98,7 +106,7 @@ def buy_airtime(amount, destination, network, process):
                 <user>{'5883139'}</user>
                 <pass>{'Free123'}</pass>
                 <refno>{'5883139'}</refno>
-                <network>{'p-vodacom'}</network>
+                <network>{'{network}'}</network>
                 <sellvalue>{'{amount}'}</sellvalue>
                 <count>{'1'}</count>
                 <extra>{'{destination}'}</extra>
@@ -106,7 +114,7 @@ def buy_airtime(amount, destination, network, process):
           </air:placeOrder>
        </soapenv:Body>
     </soapenv:Envelope>
-    """.format(amount=amount, destination=destination)
+    """.format(amount=amount, destination=destination, network='p-vodacom')
     try:
         response = requests.post(url, data=body, headers=headers)
     except requests.exceptions.Timeout:
@@ -119,6 +127,7 @@ def buy_airtime(amount, destination, network, process):
         return False
 
     root = ET.fromstring(response.text)
+    LOGGER.debug(response.text)
     order_nr = root.find(".//orderno").text
     data = {"orderno": order_nr}
     json_data = json.dumps(data)
