@@ -3,6 +3,7 @@
 
 from django_cron import CronJobBase, Schedule
 from incoming.models import ProcessingPurchase
+from django.db import DatabaseError
 import requests
 import xml.etree.ElementTree as ET
 import json
@@ -56,14 +57,21 @@ class JCronJob(CronJobBase):
         temp_holder = ProcessingPurchase.objects.all()
         for processx in temp_holder:
             if processx.status == 'D':
+                LOGGER.debug('***servicing done purchase')
                 processx.delete()
             elif processx.status == 'P':
+                LOGGER.debug('servicing processing purchase')
                 #check if airtime is on acc
                 report = checking_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
                 #todo: if success move to done
             elif processx.status == 'I':
-                processx.status = 'P'
+                LOGGER.debug('servicing init purchase')
+                try:
+                    processx.status = 'P'
+                    processx.save()
+                except DatabaseError as derr:
+                    LOGGER.debug(derr)
                 # buy airtime
                 # todo: raise exception and handle here for purchase error
                 try:
@@ -119,7 +127,7 @@ def buy_airtime(amount, destination, network, process):
     #{"orderno": "2023040215205176"}
     if response.ok and data!=None:
         response.close()
-        return True
+        return data
     else:
         LOGGER.debug('airtime purchase: unknown error')
         response.close()
