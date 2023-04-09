@@ -140,11 +140,12 @@ class MerchantData(models.Model):
 
 class ProcessingPurchase(models.Model):
     """Gather data async for buying airtime, entries deleted after purchase processed"""
-    statuschoices = [('D', 'DONE'), ('P', 'PROCESSING')]
-    status = models.CharField(max_length=36)
+    statuschoices = [('D', 'DONE'), ('P', 'PROCESSING'), ('I', 'INIT')]
+    status = models.CharField(max_length=36, choices=statuschoices)
     number = models.CharField(max_length=36)
     network = models.CharField(max_length=36)
     amount = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
+    order_nr = models.CharField(max_length=36)
     original_ussd = models.OneToOneField(
         'CodeFunction',
         on_delete=models.DO_NOTHING,

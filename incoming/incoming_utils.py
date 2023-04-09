@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#__doc__ = """supporting functions for incoming app"""
 
 from django_cron import CronJobBase, Schedule
+from incoming.models import ProcessingPurchase
 import requests
 import xml.etree.ElementTree as ET
 import json
@@ -11,6 +11,35 @@ import sys
 import logging
 LOGGER = logging.getLogger('django.request')
 LOGGER.debug(sys.path)
+
+
+def checking_airtime(order_number):
+    url = "https://ws.freepaid.co.za/airtimeplus/"
+    headers = {'content-type': 'text/xml'}
+    body = f"""
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:air="https://ws.freepaid.co.za/airtimeplus/">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <air:queryOrder>
+             <request>
+                <user>{'5883139'}</user>
+                <pass>{'Free123'}</pass>
+                <orderno>{order_number}</orderno>
+             </request>
+          </air:queryOrder>
+       </soapenv:Body>
+    </soapenv:Envelope>
+    """
+
+    response = requests.post(url, data=body, headers=headers)
+    root = ET.fromstring(response.text)
+
+    # print(response.text)
+    error_code = root.find(".//errorcode").text
+    data = {"error_code": error_code}
+
+    json_data = json.dumps(data)
+    return data
 
 
 class JCronJob(CronJobBase):
@@ -24,12 +53,30 @@ class JCronJob(CronJobBase):
         """
         LOGGER.debug('Jcron running..')
         LOGGER.debug('check db for uncompleted purchases')
+        temp_holder = ProcessingPurchase.objects.all()
+        for processx in temp_holder:
+            if processx.status == 'DONE':
+                processx.delete()
+            elif processx.status == 'PROCESSING':
+                #check if airtime is on acc
+                report = checking_airtime(order_number=processx.order_nr)
+                LOGGER.debug(report)
+            elif processx.status == 'INIT':
+                processx.status = 'PROCESSING'
+                # buy airtime
+                # todo: raise exception and handle here for purchase error
+                try:
+                    jorder_nr = buy_airtime(amount=processx.amount, number=processx.number, network=processx.network)
+                except Htt:
+                    LOGGER.debug('cannot buy airtime reliably')
+                processx.order_nr = jorder_nr
 
 
-def buy_airtime(amount, destination):
+def buy_airtime(amount, destination, network, process):
     LOGGER.debug('buy_aitrtime:')
     assert(amount!=None)
     assert(destination!=None)
+    assert(network!=None)
     amount = str(amount)
     url = "https://ws.freepaid.co.za/airtimeplus/"
     headers = {'content-type': 'text/xml'}
