@@ -49,7 +49,13 @@ def report_on_airtime(order_number):
     return data
 
 
-def buy_airtime(amount, destination, network, process):
+def buy_airtime(amount, destination, network):
+    """
+    :@param amount: topup amount on user account.
+    :@param destination: cell phone nr of initiating user
+    :@param network: cell network designation Voda,cellc,...
+    :return: @order_nr: unique number ID of the purchase
+    """
     LOGGER.debug('buy_aitrtime function'+str(destination))
     assert(amount!=None)
     assert(destination!=None)
@@ -90,7 +96,6 @@ def buy_airtime(amount, destination, network, process):
     LOGGER.debug(root)
     LOGGER.debug(response.text)
     order_nr = root.find(".//orderno").text
-    process.order_number = order_nr
     data = {"orderno": order_nr}
     json_data = json.dumps(data)
     LOGGER.debug(response)
@@ -99,7 +104,7 @@ def buy_airtime(amount, destination, network, process):
     if response.ok and data!=None:
         response.close()
         LOGGER.debug('returning order nr')
-        return data
+        return order_nr
     else:
         LOGGER.debug('airtime purchase: unknown error')
         response.close()
@@ -149,7 +154,10 @@ class JCronJob(CronJobBase):
                 except ConnectionError as exc:
                     LOGGER.debug('cannot buy airtime reliably')
                 LOGGER.debug('jorder_nr:'+str(jorder_nr))
-                processx.order_nr = jorder_nr
+                if jorder_nr:
+                    processx.order_nr = jorder_nr
+                else:
+                    LOGGER.debug('error requesting order_number')
                 try:
                     processx.save()
                 except DatabaseError as derrd:
