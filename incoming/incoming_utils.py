@@ -81,6 +81,7 @@ def buy_airtime(amount, destination, network):
        </soapenv:Body>
     </soapenv:Envelope>
     """.format(amount=amount, destination=destination, network='p-vodacom')
+    LOGGER.debug(body)
     try:
         response = requests.post(url, data=body, headers=headers)
     except requests.exceptions.Timeout:
