@@ -38,9 +38,11 @@ def report_on_airtime(order_number):
     LOGGER.debug(root)
     # print(response.text)
     error_code = root.find(".//errorcode").text
+    LOGGER.debug('error_code:')
+    LOGGER.debug(error_code)
 
     order_status = root.find(".//status").text
-
+    LOGGER.debug('order_status:')
     data = {"error_code": error_code}
 
     json_data = json.dumps(data)
