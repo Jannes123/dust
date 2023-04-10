@@ -149,11 +149,12 @@ class JCronJob(CronJobBase):
                 try:
                     LOGGER.debug('requesting airtime purchase:')
                     jorder_nr = buy_airtime(amount=processx.amount,
-                                            number=processx.number,
+                                            destination=processx.number,
                                             network=processx.network
                                             )
-                except ConnectionError as exc:
+                except Exception as exc:
                     LOGGER.debug('cannot buy airtime reliably')
+                    LOGGER.debug(exc)
                 LOGGER.debug('jorder_nr:'+str(jorder_nr))
                 if jorder_nr:
                     processx.order_nr = jorder_nr
