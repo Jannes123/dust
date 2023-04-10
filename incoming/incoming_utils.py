@@ -90,6 +90,7 @@ def buy_airtime(amount, destination, network, process):
     LOGGER.debug(root)
     LOGGER.debug(response.text)
     order_nr = root.find(".//orderno").text
+    process.order_number = order_nr
     data = {"orderno": order_nr}
     json_data = json.dumps(data)
     LOGGER.debug(response)
@@ -97,6 +98,7 @@ def buy_airtime(amount, destination, network, process):
     #{"orderno": "2023040215205176"}
     if response.ok and data!=None:
         response.close()
+        LOGGER.debug('returning order nr')
         return data
     else:
         LOGGER.debug('airtime purchase: unknown error')
@@ -122,7 +124,7 @@ class JCronJob(CronJobBase):
         for processx in temp_holder:
             if processx.status == 'D':
                 LOGGER.debug('***servicing done purchase')
-                processx.delete()
+                #processx.delete()
             elif processx.status == 'P':
                 LOGGER.debug('servicing processing purchase')
                 #check if airtime is on cellphone account
@@ -139,13 +141,18 @@ class JCronJob(CronJobBase):
                 # buy airtime
                 # todo: raise exception and handle here for purchase error
                 try:
-                    LOGGER.debug('buy airtime try:')
-                    jorder_nr = buy_airtime(amount=processx.amount, number=processx.number, network=processx.network)
+                    LOGGER.debug('requesting airtime purchase:')
+                    jorder_nr = buy_airtime(amount=processx.amount,
+                                            number=processx.number,
+                                            network=processx.network
+                                            )
                 except ConnectionError as exc:
                     LOGGER.debug('cannot buy airtime reliably')
+                LOGGER.debug('jorder_nr:'+str(jorder_nr))
                 processx.order_nr = jorder_nr
                 try:
                     processx.save()
                 except DatabaseError as derrd:
                     LOGGER.debug(derrd)
+                LOGGER.debug('servicing of INIT process finished')
 
