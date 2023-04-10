@@ -13,6 +13,27 @@ import logging
 LOGGER = logging.getLogger('django.request')
 LOGGER.debug(sys.path)
 
+freepd_error_codes = [("airtimeOKAY", "000"),
+                      ("airtimePENDING", "001"),
+                      ("airtimeEMPTYORDER", "100"),
+                      ("airtimeINVALIDUSER", "101"),
+                      ("airtimeINVALIDLAST", "102"),
+                      ("airtimeINVALIDPASS", "103"),
+                      ("airtimeINVALIDNETWORK", "104"),
+                      ("airtimeINVALIDSELLVALUE", "105"),
+                      ("airtimeFUNDSEXCEEDED", "106"),
+                      ("airtimeOUTOFSTOCK", "107"),
+                      ("airtimeINVALIDCOUNT", "108"),
+                      ("airtimeINVALIDREFNO", "109"),
+                      ("airtimeINVALIDREQUEST", "110"),
+                      ("airtimeSTILLBUSY", "111"),
+                      ("airtimeINVALIDORDERNUMBER", "112"),
+                      ("airtimeINVALIDEXTRA", "113"),
+                      ("airtimeINTERNAL", "197"),
+                      ("airtimeTEMPORARY", "198"),
+                      ("airtimeUNKNOWN", "199")
+                      ]
+
 
 def report_on_airtime(order_number):
     LOGGER.debug('report on airtime:' + str(order_number))
@@ -40,12 +61,8 @@ def report_on_airtime(order_number):
     error_code = root.find(".//errorcode").text
     LOGGER.debug('error_code:')
     LOGGER.debug(error_code)
-
     order_status = root.find(".//status").text
-    LOGGER.debug('order_status:')
     data = {"error_code": error_code}
-
-    json_data = json.dumps(data)
     return data
 
 
@@ -136,6 +153,12 @@ class JCronJob(CronJobBase):
                 #check if airtime is on cellphone account
                 report = report_on_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
+                if report['error_code'] == 000:
+                    processx.status == 'D'
+                    try:
+                        processx.save()
+                    except DatabaseError as errpr:
+                        LOGGER.debug(errpr)
                 #todo: if success move to done
             elif processx.status == 'I':
                 LOGGER.debug('servicing init purchase')
