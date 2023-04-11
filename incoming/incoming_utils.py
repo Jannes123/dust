@@ -78,6 +78,23 @@ def buy_airtime(amount, destination, network):
     assert(destination!=None)
     assert(network!=None)
     amount = str(amount)
+    LOGGER.debug(network.strip())
+    jnetwork = 'p-vodacom'
+    if network.strip() == 'MTN':
+        jnetwork = 'p-mtn'
+    elif network.strip() == 'Vodacom':
+        jnetwork = 'p-vodacom'
+    elif network.strip() == 'CELLC':
+        jnetwork = 'p-cellc'
+    elif network.strip() == 'Eskom':
+        jnetwork = 'p-eskom'
+    elif network.strip() == 'Heita':
+        jnetwork = 'p-heita'
+    elif network.strip() == 'WorldCall':
+        jnetwork = 'p-worldcall'
+    elif network.strip() == 'Virgin Mobile':
+        jnetwork = 'p-virginmobile'
+
     url = "https://ws.freepaid.co.za/airtimeplus/"
     headers = {'content-type': 'text/xml'}
     body = f"""
@@ -97,7 +114,7 @@ def buy_airtime(amount, destination, network):
           </air:placeOrder>
        </soapenv:Body>
     </soapenv:Envelope>
-    """.format(amount=amount, destination=destination, network='p-vodacom')
+    """.format(amount=amount, destination=destination, network=jnetwork)
     LOGGER.debug(body)
     try:
         response = requests.post(url, data=body, headers=headers)
