@@ -593,6 +593,7 @@ def pay_notify_datain(request):
         except DatabaseError as e:
             LOGGER.debug('payRequest unable to create entry')
             LOGGER.debug(e)
+            #todo: display form again
 
         #return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
         return HttpResponse()
