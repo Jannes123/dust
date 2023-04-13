@@ -170,6 +170,8 @@ class JCronJob(CronJobBase):
                 #check if airtime is on cellphone account
                 report = report_on_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
+                LOGGER.debug(type(report))
+                LOGGER.debug(type(report['error_code']))
                 if report['error_code'] == '000':
                     processx.status == 'D'
                     try:
