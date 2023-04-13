@@ -1,13 +1,8 @@
 {% extends "jbase.html" %}
 {% load static %}
-{% block title %} {% endblock title %}
+{% block title %} Proceed to payment gateway {% endblock title %}
 {% block middle %}
                 <p></p><p></p><p></p><p></p>
-                <p>|</p>
-                <p>|</p>
-                <p>|</p>
-                <p>|</p>
-                <p>|</p>
                 <p>|</p>
                 <h2>PLEASETOPMEUP</h2>
                 <p></p><p></p><p></p>
@@ -15,10 +10,10 @@
                  <p>|</p>
         <form  action="https://instapay-sandbox.trustlinkhosting.com/index.php" method="post">
             {% csrf_token %}
-            <div class="input-group input-group-sm center_div">
+            <div class="d-none input-group input-group-sm center_div">
                 {{insta}}
             </div>
-            <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
+            <input type="submit" class="btn btn-primary btn-sm" value="Proceed" />
         </form>
                  <p>|</p>
                  <p>|</p>

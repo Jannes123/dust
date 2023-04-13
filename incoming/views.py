@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 import json
 import datetime
 from urllib.parse import unquote
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseServerError
 import uuid
 import re
 from django.contrib.sites.models import Site
@@ -337,6 +337,7 @@ def pay_cancel(request):
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
+        return render(request, 'incoming/cancel.html')
     elif request.method == 'POST':
         LOGGER.debug('POST')
     else:
@@ -459,19 +460,15 @@ class InstaNotifyView(APIView):
 @csrf_exempt
 def pay_notify_datain(request):
     """
-    incoming notification
+    incoming notification.  POST from instapay gateway on specified url.
     """
     LOGGER.debug(request.path_info)
     LOGGER.debug(request.method)
     if request.method == 'GET':
-        LOGGER.debug("pay_botify:GET:" + str(request.__dict__))
-        LOGGER.debug(request.content_params)
-        LOGGER.debug(request._messages)
-        LOGGER.debug('Not supported')
+        LOGGER.debug("pay_notify:GET:" + str(request.__dict__))
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
     elif request.method == 'POST':
-        #post data received from logs:
-        #b'{}'
+        # direct POST from instapay server, there is no form validation required.
         LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
         LOGGER.debug(request.path_info)
         LOGGER.debug(request.content_params)
@@ -525,7 +522,7 @@ def pay_notify_datain(request):
         except DatabaseError as e:
             LOGGER.debug('PayInit unable to create entry')
             LOGGER.debug(e)
-            #raise Http404("cannot create entry")
+            raise HttpResponseServerError("cannot create entry")
             #404 cannot create
         # todo: checksum
         paymentSystemReference = notification['paymentSystemReference']
@@ -574,8 +571,8 @@ def pay_notify_datain(request):
                             init=pne
                             )
             pd.save()
-        except DatabaseError as pderr:
-            LOGGER.debug(pderr)
+        except DatabaseError as error_pd:
+            LOGGER.debug(error_pd)
         # update/create request entry for init, async processes continue app process
 
         rs = notification['requestStatus']
