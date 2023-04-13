@@ -170,13 +170,14 @@ class JCronJob(CronJobBase):
                 #check if airtime is on cellphone account
                 report = report_on_airtime(order_number=processx.order_nr)
                 LOGGER.debug(report)
-                if report['error_code'] == 000:
+                if report['error_code'] == '000':
                     processx.status == 'D'
                     try:
                         processx.save()
                     except DatabaseError as errpr:
                         LOGGER.debug(errpr)
                 #todo: if success move to done
+
             elif processx.status == 'I':
                 LOGGER.debug('servicing init purchase')
                 try:
