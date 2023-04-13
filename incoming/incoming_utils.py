@@ -173,7 +173,7 @@ class JCronJob(CronJobBase):
                 LOGGER.debug(type(report))
                 LOGGER.debug(type(report['error_code']))
                 if report['error_code'] == '000':
-                    processx.status == 'D'
+                    processx.status = 'D'
                     try:
                         processx.save()
                     except DatabaseError as errpr:
