@@ -352,6 +352,7 @@ def pay_pending(request):
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
         LOGGER.debug(stripped_match)
+        return render(request, 'incoming/pending.html')
     elif request.method == 'POST':
         LOGGER.debug('POST')
     else:
