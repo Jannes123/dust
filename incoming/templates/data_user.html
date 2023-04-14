@@ -1,24 +1,30 @@
 {% extends "jbase.html" %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% block title %} {% endblock title %}
+{% block title %} Sponsor details {% endblock title %}
 {% block middle %}
                 <p></p><p></p><p></p><p></p>
                 <p>|</p>
                 <p>|</p><h2>PLEASETOPMEUP</h2>
                 <p>|</p>
                 <p>|</p>
-                <p>Please enter details</p>
+    <div class="row p-1 m-1">
+   <div class="col">
+           <div class="container-fluid border border-success rounded shadow">
+               <h1 id="jid_returned_forex_quote">You will be routed to payment gateway</h1>
+                <p>Please enter details no account required</p>
                 <p>|</p>
-
          <form  action="" method="post">
             {% csrf_token %}
-             <p>Please enter details</p>
+             <p>Details forwarded to instapay gateway.</p>
             <div class="input-group input-group-sm center_div">
                 {{form|crispy}}
             </div>
             <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
-        </form>  
+        </form>
+              </div>
+   </div>
+</div>
                 <p></p><p></p><p></p>
                  <p>|</p>
                  <p>|</p>
