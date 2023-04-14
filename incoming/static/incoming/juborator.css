@@ -25,5 +25,7 @@ body {
 }
 
 .form-group {
+    margin-bottom: 5px;
+    margin-top: 5px;
     padding: 10px;
 }
