@@ -178,8 +178,6 @@ class JCronJob(CronJobBase):
                         processx.save()
                     except DatabaseError as errpr:
                         LOGGER.debug(errpr)
-                #todo: if success move to done
-
             elif processx.status == 'I':
                 LOGGER.debug('servicing init purchase')
                 try:

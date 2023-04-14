@@ -186,8 +186,6 @@ def edit_detail_datain(request):
         #b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
         #LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
         LOGGER.debug('POST')
-        LOGGER.debug(request.path_info)
-        LOGGER.debug(request.content_params)
         post_data_bytes = request.read()
         LOGGER.debug(post_data_bytes)
         post_data = post_data_bytes.decode('utf-8')
@@ -210,8 +208,8 @@ def edit_detail_datain(request):
                     timestamp=val_timestamp, pay_url=val_pay_url)
             fitem.save()
         except DatabaseError as e:
-            LOGGER.debug('unable to create entry')
-            LOGGER.debug(e)
+            LOGGER.warning('Codefunction unable to create entry')
+            LOGGER.error(e, exc_info=True)
             raise Http404("cannot create entry")
             #404 cannot create
         # http redirect to url serving xml doc
