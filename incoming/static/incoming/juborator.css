@@ -3,6 +3,7 @@ body {
     background-color: #343543;
     padding-bottom: 5px;
     background-size: 300%;
+    margin: 10px;
 }
 
 
@@ -24,5 +25,5 @@ body {
 }
 
 .form-group {
-    padding: 5px;
+    padding: 10px;
 }
