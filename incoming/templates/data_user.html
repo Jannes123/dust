@@ -1,6 +1,7 @@
 {% extends "jbase.html" %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% crispy productionpurchase_form %}
 {% block title %} PLEASETOPMEUP {% endblock title %}
 {% block middle %}
                 <p></p><p></p><p></p><p></p>
@@ -9,21 +10,21 @@
                 <p>|</p>
                 <p>|</p>
     <div class="row p-1 m-1">
-   <div class="col">
+        <div class="col-sm-11">
            <div class="container-fluid border border-success rounded shadow">
                 <h2>Please enter details no account required</h2>
                 <p>|</p>
-         <form  action="" method="post">
-            {% csrf_token %}
-             <p>Details forwarded to instapay gateway.</p>
-            <div class="input-group input-group-sm center_div form-group">
-                {{form|crispy}}
-            </div>
-            <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
-        </form>
+                 <form  action="" method="post">
+                    {% csrf_token %}
+                     <p>Details forwarded to instapay gateway.</p>
+                    <div class="input-group input-group-sm center_div form-group">
+                        {{form|crispy}}
+                    </div>
+                    <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
+                </form>
               </div>
-   </div>
-</div>
+        </div>
+    </div>
                 <p></p><p></p><p></p>
                  <p>|</p>
                  <p>|</p>
