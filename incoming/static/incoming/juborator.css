@@ -28,4 +28,7 @@ body {
     margin-bottom: 5px;
     margin-top: 5px;
     padding: 10px;
+    background-color: #e9ecef;
+    font-weight: 500;
+    font-size: larger;
 }
