@@ -12,7 +12,7 @@ body {
     margin-bottom: 3px;
     margin-top: 3px;
     height: auto;
-    color: gray;
+    color: #2f2f31;
     text-shadow: black 0.3em 0.3em 0.3em;
     background: white;
     opacity: 0.9;
@@ -31,9 +31,10 @@ body {
     background-color: #e9ecef;
     font-weight: 500;
     font-size: larger;
-    opacity: 0.9;
+    opacity: 0.8;
 }
 
 .jgray {
     background-color: #e9ecef;
+    opacity: 0.8;
 }

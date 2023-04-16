@@ -36,7 +36,7 @@ class ProductionPurchaseForm(forms.ModelForm):
                 'amount'
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='button white')
+                Submit('submit', 'Submit_test', css_class='button white')
             )
         )
 
