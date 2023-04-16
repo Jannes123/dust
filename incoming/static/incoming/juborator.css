@@ -1,8 +1,8 @@
 body {
-    background: url('logo3.png') no-repeat center center;
+    background: url('home_background.jpeg') no-repeat center center;
     background-color: #343543;
+    background-size: cover;
     padding-bottom: 5px;
-    background-size: 300%;
     margin: 10px;
 }
 
@@ -14,7 +14,7 @@ body {
     height: auto;
     color: white;
     text-shadow: black 0.3em 0.3em 0.3em;
-    background: transparent;
+    background: white;
     opacity: 0.9;
 }
 
@@ -25,10 +25,11 @@ body {
 }
 
 .form-group {
-    margin-bottom: 5px;
-    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-top: 10px;
     padding: 10px;
     background-color: #e9ecef;
     font-weight: 500;
     font-size: larger;
+    opacity: 0.9;
 }
