@@ -38,3 +38,8 @@ body {
     background-color: #e9ecef;
     opacity: 0.8;
 }
+
+
+.jbutton {
+    padding: 10px;
+}
