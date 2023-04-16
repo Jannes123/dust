@@ -9,15 +9,20 @@
                 <p></p><p></p><p></p>
                  <p>|</p>
                  <p>|</p>
-        <form  action="https://instapay-sandbox.trustlinkhosting.com/index.php" method="post">
-            {% csrf_token %}
-            <div class="d-none input-group input-group-sm center_div">
-                {{insta|crispy}}
-            </div>
-            <input type="submit" class="btn btn-primary btn-sm" value="Proceed" />
-        </form>
-                 <p>|</p>
-                 <p>|</p>
+    <div class="row p-1 m-1">
+        <div class="col-sm-11">
+           <div class="container-fluid border border-success rounded shadow jgray">
+                <h2>Click to proceed to payment site</h2>
+                <form  action="https://instapay-sandbox.trustlinkhosting.com/index.php" method="post">
+                    {% csrf_token %}
+                    <div class="d-none input-group input-group-sm center_div">
+                        {{insta|crispy}}
+                    </div>
+                    <input type="submit" class="btn btn-primary btn-sm" value="Proceed" />
+                </form>
+           </div>
+        </div>
+    </div>
                  <p>|</p><p>|</p>
 {% endblock middle %}
 {% block lowslider %}
