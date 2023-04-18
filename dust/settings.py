@@ -30,6 +30,9 @@ DEBUG = False
 ALLOWED_HOSTS = ['0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
 
 
+if DEBUG == True:
+    ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
+
 # Application definition
 
 INSTALLED_APPS = [
