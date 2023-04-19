@@ -1,5 +1,6 @@
 body {
-    background: url('home_background.jpeg') no-repeat center center;
+    /*background: url('home_background.jpeg') no-repeat center;*/
+    background: url('https://storage.googleapis.com/profastchangingquicklythunder/blankie.png') no-repeat center ;
     background-color: #343543;
     background-size: cover;
     padding-bottom: 5px;
