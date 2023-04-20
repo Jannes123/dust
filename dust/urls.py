@@ -24,8 +24,9 @@ urlpatterns = [
         path('admin/', admin.site.urls),
         path('index.html', include('incoming.urls', namespace='index')),
         path('api-auth/', include('rest_framework.urls')),
-        #path('data/', include('incoming.urls', namespace='data')),
         path('ussdincoming/', include('incoming.urls', namespace='ussd')),
         path('', include('incoming.urls', namespace='incoming')),#non ussd urls
 ]
-              #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.DEBUG:
+        urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

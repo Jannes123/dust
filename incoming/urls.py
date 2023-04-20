@@ -29,4 +29,5 @@ urlpatterns = [
     re_path(r'^dash/$', dash, name='dash'),
     path('routa/', include(router.urls)),
     path('404', simple_page_not_found, name='simple_page_not_found')]
+
 handler404 = 'incoming.views.simple_page_not_found'
