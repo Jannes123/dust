@@ -167,6 +167,15 @@ def get_insta_form(request, jamount, m_tx_order_nr):
     LOGGER.debug(insta_form_obj)
     return insta_form_obj
 
+@csrf_exempt
+def onlytheform(request):
+    LOGGER.debug('only form')
+    if request.method == 'GET':
+        onlyf = ProductionPurchaseForm()
+        return render(request, 'incoming/only.html', {'onlyf':onlyf})
+    elif request.method =='POST':
+        LOGGER.debug(request.read())
+
 #ussd first phase
 @csrf_exempt
 def edit_detail_datain(request):

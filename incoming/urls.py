@@ -6,7 +6,8 @@ from django.urls.conf import include
 from incoming.views import simple_page_not_found,\
         edit_detail_datain, outer, OuterXML,\
         pay_return, pay_cancel, pay_pending,\
-        InstaNotifyView, pay_notify_datain, dash
+        InstaNotifyView, pay_notify_datain, dash,\
+        onlytheform
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register("xmlapi", OuterXML, basename="out")
@@ -15,6 +16,7 @@ urlpatterns = [
     path('', edit_detail_datain, name='edit_datain'),
     path('jpay-notify-rest/<slug:ucode>/', InstaNotifyView.as_view(), name='notify-rest'),
     path('jpay-notify-rest/', InstaNotifyView.as_view(), name='notify-rest-get'),
+    path('only/', onlytheform, name='only'),
     re_path(r'^index[.html]$', edit_detail_datain, name='edit_datain'),
     re_path(r'^outer/.{36}/$', outer, name='to-confirmation'),
     re_path(r'pay-link/.{36}/$', outer, name='payments'),
