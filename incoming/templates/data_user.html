@@ -4,16 +4,11 @@
 {% crispy productionpurchase_form %}
 {% block title %} PLEASETOPMEUP {% endblock title %}
 {% block middle %}
-                <p></p><p></p><p></p><p></p>
-                <p>|</p>
-                <p>|</p><h2>Sponsor details</h2>
-                <p>|</p>
-                <p>|</p>
+	<h2>Sponsor details</h2>
     <div class="row p-1 m-1">
         <div class="col-sm-11">
            <div class="container-fluid border border-success rounded shadow jgray">
                 <h2>Please enter details no account required</h2>
-                <p>|</p>
                  <form  action="" method="post">
                     {% csrf_token %}
                      <p>Details forwarded to instapay gateway.</p>
@@ -25,13 +20,6 @@
         </div>
     </div>
                 <p></p><p></p><p></p>
-                 <p>|</p>
-                 <p>|</p>
-                 <p>|</p>
-                 <p>|</p>
-                 <p>|</p>
-                 <p>|</p>
-                 <p>|</p><p>|</p>
 {% endblock middle %}
 {% block lowslider %}
 <a class = "btn btn-info btn-sm" href = "#" role = "button">Read more</a>

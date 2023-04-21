@@ -11,7 +11,7 @@
     <link href="{% static 'incoming/juborator.css' %}" rel="stylesheet" type="text/css" />
 </head>
 
-<body>
+<body class="bg-image min-vh-100">
     <div class="row">
     <div class="container">
         <div class="jumbotron text-center">
@@ -21,8 +21,7 @@
     </div>
     <div class="row">
 	<div class="container">
-        {% block middle %}
-	    {% endblock middle %}
+        {% block middle %}{% endblock middle %}
     </div>
     </div>
     <div class="row">
