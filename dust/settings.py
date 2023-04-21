@@ -96,6 +96,46 @@ WSGI_APPLICATION = 'dust.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+JAZZMIN_SETTINGS = {
+    "site_title": "PTMU Admin",
+    "site_header": "Includes USSD,SMS,PAYMENTS,AIRTIME-TOPUPS logs",
+    "site_brand": "PTMU",
+    "site_logo": "books/img/logo.png",
+    "login_logo": "static/incoming/nunchucks.webp",
+    "site_logo_classes": "img-circle",
+    "welcome_sign": "Welcome to the Dashboard",
+    "copyright": "Sweet Crystals PTY LTD",
+    "search_model": ["auth.User", "auth.Group", "incoming.CodeFunction"],
+
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "auth.User"},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"app": "incoming"},
+    ],
+
+    "show_sidebar": True,
+
+    # Whether to aut expand the menu
+    "navigation_expanded": True,
+
+    # Hide these apps when generating side menu e.g (auth)
+    "hide_apps": [],
+
+    # Hide these models when generating side menu (e.g auth.user)
+    "hide_models": [],
+}
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
