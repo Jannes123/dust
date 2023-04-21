@@ -293,7 +293,7 @@ def outer(request):
             #next view to redirect to success page/instapay
             context = {}
             LOGGER.debug('second phase complete')
-            m_tx_order_nr = 'rhl' + str(uuid.uuid4())[-18:-1]
+            m_tx_order_nr = 'CAL' + str(uuid.uuid4())[-18:-1]
             insta = get_insta_form(request, jamount=result.amount, m_tx_order_nr=m_tx_order_nr)
             context.update({'insta': insta})
             # also create request processing purchase with status processing and user number
