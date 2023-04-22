@@ -1,0 +1,29 @@
+- model: incoming.productionpurchase
+  pk: 1
+  fields:
+    name: Elvis
+    surname: Presley
+    email: elvis@gmail.com
+    mobile: 0828000222
+    amount: 20.00
+- model: incoming.productionpurchase
+  pk: 2
+  fields:
+    name: Paul
+    surname: McCartney
+    email: paulmc@gmail.com
+    mobile: 0828000333
+    amount: 10.00
+- model: incoming.merchantdata
+  pk: 1
+  fields:
+    merchant_uuid: 3806b4c2-ac63-48f6-87e4-74bd84ffaed7
+    merchant_account_uuid: cd8184ab-1036-4984-9c0d-04eedd4a54fb
+    security_key: H$zFHfUvuv!JsAm
+    merchant_shortcode: CAL
+    current_invoice_number: 76
+- model: sites.site
+  pk: 1
+  fields:
+    domain: www.pleasetopmeup.com
+    name: pleasetopmeup

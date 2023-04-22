@@ -110,7 +110,8 @@ def get_insta_form(request, jamount, m_tx_order_nr):
     # m_email_address =
     # checksum
     LOGGER.debug("---sending checksum sending---")
-    secret = 'c@!!@ll2023'
+    secret = str(merchant_data.security_key)
+    LOGGER.debug(secret)
     check_calculation = "{}_{}_{}_{}_ZAR_{}"\
         .format(m_uuid, m_account_uuid, m_tx_id, m_tx_amount_for_checksum, secret)
     LOGGER.debug(check_calculation)
