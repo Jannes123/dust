@@ -300,10 +300,12 @@ def outer(request):
             # also create request processing purchase with status processing and user number
             # the amount carried on to other phases is the amount sponsor is willing to pay
             # order_nr is updated by async processes
+            # profit calc
+            amty = Decimal(result.amount)*Decimal(0.9)
             pp = ProcessingPurchase(status='I',
                                     number=nr.user_number,
                                     network=nr.network,
-                                    amount=result.amount,
+                                    amount=amty,
                                     original_ussd=nr
                                     )
             try:
