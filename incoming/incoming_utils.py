@@ -84,7 +84,7 @@ def buy_airtime(amount, destination, network):
         jnetwork = 'p-mtn'
     elif network.strip() == 'Vodacom':
         jnetwork = 'p-vodacom'
-    elif network.strip() == 'CELLC':
+    elif (network.strip() == 'CELLC') or (network.strip() == 'CellC'):
         jnetwork = 'p-cellc'
     elif network.strip() == 'Eskom':
         jnetwork = 'p-eskom'
