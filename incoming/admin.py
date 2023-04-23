@@ -27,7 +27,7 @@ class PayDetailsAdmin(admin.ModelAdmin):
 
 
 class MerchantDataAdmin(admin.ModelAdmin):
-    list_display = ('merchant_uuid', 'merchant_account_uuid', 'security_key', 'timestamp')
+    list_display = ('merchant_uuid', 'merchant_account_uuid', 'security_key')
 
 
 class ProductionPurchaseAdmin(admin.ModelAdmin):
