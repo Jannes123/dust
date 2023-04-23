@@ -302,10 +302,11 @@ def outer(request):
             # order_nr is updated by async processes
             # profit calc
             amty = Decimal(result.amount)*Decimal(0.9)
-            pp = ProcessingPurchase(status='I',
+            pp = ProcessingPurchase(status='S',
                                     number=nr.user_number,
                                     network=nr.network,
                                     amount=amty,
+                                    uniqueorder=m_tx_order_nr,
                                     original_ussd=nr
                                     )
             try:
@@ -593,7 +594,6 @@ def pay_notify_datain(request):
             if x[1] == rs:
                 rsx = str(x[0])
         try:
-            #pr = PayRequest(requestStatus='C', requestTokenId='3070369685', requestAmount='44.00', init=pi)
             req = PayRequest(requestStatus=rsx, requestTokenId=requestTokenId,
                              requestAmount=requestAmount,
                              init=pne)
@@ -601,8 +601,21 @@ def pay_notify_datain(request):
         except DatabaseError as e:
             LOGGER.debug('payRequest unable to create entry')
             LOGGER.debug(e)
-            #todo: display form again
 
+        try:
+            # there can be only one
+            airtime_purchase = ProcessingPurchase.objects.get(uniqueorder=payeeRefInfo)
+        except DatabaseError as e:
+            LOGGER.debug(e)
+            LOGGER.debug('cannot find linked processing_order_entry')
+
+        # move airtime_purchase status to initialised, crons take over!
+        airtime_purchase.status = 'I'
+        try:
+            airtime_purchase.save()
+        except DatabaseError as e:
+            LOGGER.debug(e)
+            LOGGER.debug('cannot save entry')
         #return Response(status=status.HTTP_200_OK, content_type='application/x-www-form-urlencoded', data=None)
         return HttpResponse()
     else:

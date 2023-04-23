@@ -41,6 +41,7 @@ class ProductionPurchase(models.Model):
     mobile = models.CharField(max_length=14)
     # todo: add network attr like above
     amount = models.DecimalField(max_digits=5, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now=True)
     original_url_unique = models.ForeignKey(
         'CodeFunction',
         on_delete=models.CASCADE,
@@ -65,6 +66,7 @@ class PayInit(models.Model):
     payeeOrderNr = models.CharField(max_length=50)
     payeeOrderItemName = models.CharField(max_length=50)
     payeeOrderItemDescription = models.CharField(max_length=60)
+    timestamp = models.DateTimeField(auto_now=True)
 
 
 class PayBuyer(models.Model):
@@ -73,6 +75,7 @@ class PayBuyer(models.Model):
     payerSurname = models.CharField(max_length=80)
     payerEmail = models.CharField(max_length=80)
     payerMobile = models.CharField(max_length=15)
+    timestamp = models.DateTimeField(auto_now=True)
 
 
 class PayRequest(models.Model):
@@ -96,6 +99,7 @@ class PayRequest(models.Model):
     requestAmount = models.DecimalField(max_digits=5, decimal_places=2, blank=True)
     requestCurrency = models.CharField(max_length=3, default='ZAR', blank=True)
     requestStatus = models.CharField(max_length=1, choices=paychoices, default=paychoicedefault, blank=False)
+    timestamp = models.DateTimeField(auto_now=True)
     init = models.ForeignKey(
         'PayInit',
         on_delete=models.CASCADE,
@@ -122,6 +126,7 @@ class PayDetails(models.Model):
     paymentDateTime = models.DateTimeField(auto_now=True)
     paymentType = models.CharField(max_length=10, choices=detailchoices)
     paymentMethod = models.CharField(max_length=12, choices=methodchoices)
+    timestamp = models.DateTimeField(auto_now=True)
     init = models.ForeignKey(
         'PayInit',
         on_delete=models.CASCADE,
@@ -140,12 +145,15 @@ class MerchantData(models.Model):
 
 class ProcessingPurchase(models.Model):
     """Gather data async for buying airtime, entries deleted after purchase processed"""
-    statuschoices = [('D', 'DONE'), ('P', 'PROCESSING'), ('I', 'INIT')]
+    statuschoices = [('D', 'DONE'), ('P', 'PROCESSING'), ('I', 'INIT'), ('S', 'SENT')]
     status = models.CharField(max_length=36, choices=statuschoices)
     number = models.CharField(max_length=36)
     network = models.CharField(max_length=36)
     amount = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
-    order_nr = models.CharField(max_length=36, blank=True)
+    order_nr = models.CharField(max_length=36, blank=True)# airtime accounts gateway order nr
+    # instapay defined field across tables
+    uniqueorder = models.CharField(max_length=36, blank=True)# m_tx_order_nr and payeeRefInfo, tracks process across integrations
+    timestamp = models.DateTimeField(auto_now=True)
     original_ussd = models.OneToOneField(
         'CodeFunction',
         on_delete=models.DO_NOTHING,

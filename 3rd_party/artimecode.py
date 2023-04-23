@@ -3,6 +3,7 @@
 import requests
 import xml.etree.ElementTree as ET
 import json
+from requests import Request, Session, post
 
 url = "https://ws.freepaid.co.za/airtimeplus/"
 headers = {'content-type': 'text/xml'}
@@ -20,7 +21,12 @@ body = f"""
 </soapenv:Envelope>
 """
 
-response = requests.post(url,data=body,headers=headers)
+
+s = Session()
+
+request = Request('POST', url, data=body, headers=headers)
+prepped_request = s.prepare(request)
+response = post(url, data=body, headers=headers)
 root = ET.fromstring(response.text)
 
 balance = root.find(".//balance").text
