@@ -11,31 +11,31 @@ class CodeFunctionAdmin(admin.ModelAdmin):
 
 
 class PayInitAdmin(admin.ModelAdmin):
-    list_display = ('payeeUuid', 'payeeAccountUuid', 'payeeInvoiceNr', 'payeeOrderNr')
+    list_display = ('payeeUuid', 'payeeAccountUuid', 'payeeInvoiceNr', 'payeeOrderNr', 'timestamp')
 
 
 class PayBuyerAdmin(admin.ModelAdmin):
-    list_display = ('payerName', 'payerSurname', 'payerEmail', 'payerMobile')
+    list_display = ('payerName', 'payerSurname', 'payerEmail', 'payerMobile','timestamp')
 
 
 class PayRequestAdmin(admin.ModelAdmin):
-    list_display = ('requestStatus', 'requestAmount', 'requestTokenId')
+    list_display = ('requestStatus', 'requestAmount', 'requestTokenId', 'timestamp')
 
 
 class PayDetailsAdmin(admin.ModelAdmin):
-    list_display = ('paymentAmount', 'paymentDateTime', 'paymentSystemReference', 'paymentMethod')
+    list_display = ('paymentAmount', 'paymentDateTime', 'paymentSystemReference', 'paymentMethod', 'timestamp')
 
 
 class MerchantDataAdmin(admin.ModelAdmin):
-    list_display = ('merchant_uuid', 'merchant_account_uuid', 'security_key')
+    list_display = ('merchant_uuid', 'merchant_account_uuid', 'security_key', 'timestamp')
 
 
 class ProductionPurchaseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'surname', 'email', 'mobile')
+    list_display = ('name', 'surname', 'email', 'mobile', 'timestamp')
 
 
 class ProcessingPurchaseAdmin(admin.ModelAdmin):
-    list_display = ('status', 'number', 'amount')
+    list_display = ('status', 'number', 'amount', 'timestamp')
 
 admin.site.register(CodeFunction, CodeFunctionAdmin)
 admin.site.register(PayInit, PayInitAdmin)
