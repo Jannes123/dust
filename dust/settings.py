@@ -33,6 +33,14 @@ ALLOWED_HOSTS = ['0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopm
 if DEBUG == True:
     ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
 
+if DEBUG:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -100,7 +108,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "PTMU Admin",
     "site_header": "Includes USSD,SMS,PAYMENTS,AIRTIME-TOPUPS logs",
     "site_brand": "PTMU",
-    "site_logo": "books/img/logo.png",
+    "site_logo": "static/incoming/nunchucks.webp",
     "login_logo": "static/incoming/nunchucks.webp",
     "site_logo_classes": "img-circle",
     "welcome_sign": "Welcome to the Dashboard",

@@ -238,7 +238,7 @@ def outer(request):
     """
     LOGGER.debug('outer:')
     if request.method == 'GET':
-        LOGGER.debug('GET it now:')
+        LOGGER.debug('GET unique url for sponsor:')
         match_result = request.path_info
         stripped_match = re.findall(r'/[a-zA-Z0-9-]{36}/', match_result)[-1]
         stripped_match = stripped_match.lstrip(r'/').rstrip(r'/')
@@ -272,7 +272,7 @@ def outer(request):
         LOGGER.debug(form.__dict__)
         return render(request, 'incoming/data_user.html', context)
     elif request.method == 'POST':
-        LOGGER.debug('outer production purchase POST')
+        LOGGER.debug('outer production purchase POST for sponsor')
         LOGGER.debug(request.POST)
         form = ProductionPurchaseForm(request.POST)
         if form.is_valid():
