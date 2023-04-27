@@ -211,7 +211,7 @@ def edit_detail_datain(request):
         val_sponsor_number = pn['sponsor_number']
         val_network = pn['network']
         val_timestamp = datetime.datetime.now()
-        val_pay_url = uuid.uuid1()
+        val_pay_url = uuid.uuid4()
         try:
             fitem = CodeFunction(call_log=val_call_log, network=val_network, amount=val_amount,\
                     user_number=val_user_number, sponsor_number=val_sponsor_number,\
