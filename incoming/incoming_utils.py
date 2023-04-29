@@ -4,7 +4,9 @@
 from django_cron import CronJobBase, Schedule
 from incoming.models import ProcessingPurchase
 from django.db import DatabaseError
-import requests
+from requests import Session
+from requests.exceptions import ConnectionError, TooManyRedirects, Timeout
+
 import xml.etree.ElementTree as ET
 import json
 import sys
@@ -35,7 +37,7 @@ freepd_error_codes = [("airtimeOKAY", "000"),
                       ]
 
 
-def report_on_airtime(order_number):
+def report_on_airtime(session, order_number):
     LOGGER.debug('report on airtime:' + str(order_number))
     url = "https://ws.freepaid.co.za/airtimeplus/"
     headers = {'content-type': 'text/xml'}
@@ -53,20 +55,19 @@ def report_on_airtime(order_number):
        </soapenv:Body>
     </soapenv:Envelope>
     """.format(order_number=order_number)
-
-    response = requests.post(url, data=body, headers=headers)
+    response = session.post(url, data=body, headers=headers)
     root = ET.fromstring(response.text)
     LOGGER.debug(root)
     # print(response.text)
     error_code = root.find(".//errorcode").text
     LOGGER.debug('error_code:')
     LOGGER.debug(error_code)
-    order_status = root.find(".//status").text
+    #order_status = root.find(".//status").text
     data = {"error_code": error_code}
     return data
 
 
-def buy_airtime(amount, destination, network):
+def buy_airtime(session, amount, destination, network):
     """
     :@param amount: topup amount on user account.
     :@param destination: cell phone nr of initiating user
@@ -116,15 +117,17 @@ def buy_airtime(amount, destination, network):
     </soapenv:Envelope>
     """.format(amount=amount, destination=destination, network=jnetwork)
     LOGGER.debug(body)
+
     try:
-        response = requests.post(url, data=body, headers=headers)
-    except requests.exceptions.Timeout:
-        LOGGER.debug('airtime purchase: Timeout')
-        response.close()
+        response = session.post(url, data=body, headers=headers)
+    except ConnectionError:
+        LOGGER.debug('airtime purchase: Cannot connect')
         return False
-    except requests.exceptions.TooManyRedirects:
+    except TooManyRedirects:
         LOGGER.debug('airtime purchase: Too many redirects')
-        response.close()
+        return False
+    except Timeout:
+        LOGGER.debug('airtime purchase: Cannot connect')
         return False
 
     root = ET.fromstring(response.text)
@@ -161,6 +164,7 @@ class JCronJob(CronJobBase):
             temp_holder = ProcessingPurchase.objects.all()
         except DatabaseError as perr:
             LOGGER.debug(perr)
+        s = Session()
         for processx in temp_holder:
             if processx.status == 'D':
                 LOGGER.debug('***servicing done purchase')
@@ -168,7 +172,7 @@ class JCronJob(CronJobBase):
             elif processx.status == 'P':
                 LOGGER.debug('servicing processing purchase')
                 #check if airtime is on cellphone account
-                report = report_on_airtime(order_number=processx.order_nr)
+                report = report_on_airtime(session=s, order_number=processx.order_nr)
                 LOGGER.debug(report)
                 LOGGER.debug(type(report))
                 LOGGER.debug(type(report['error_code']))
@@ -186,10 +190,10 @@ class JCronJob(CronJobBase):
                 except DatabaseError as derr:
                     LOGGER.debug(derr)
                 # buy airtime
-                # todo: raise exception and handle here for purchase error
                 try:
                     LOGGER.debug('requesting airtime purchase:')
-                    jorder_nr = buy_airtime(amount=processx.amount,
+                    jorder_nr = buy_airtime(session=s,
+                                            amount=processx.amount,
                                             destination=processx.number,
                                             network=processx.network
                                             )
@@ -206,4 +210,5 @@ class JCronJob(CronJobBase):
                 except DatabaseError as derrd:
                     LOGGER.debug(derrd)
                 LOGGER.debug('servicing of INIT process finished')
+        s.close()
 
