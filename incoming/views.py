@@ -197,18 +197,13 @@ def edit_detail_datain(request):
         # post data received:
         # b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
         # LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
-        LOGGER.debug('POST')
         post_data_bytes = request.read()
         LOGGER.debug(post_data_bytes)
         post_data = post_data_bytes.decode('utf-8')
         pn = json.loads(post_data)
         LOGGER.debug(post_data)
-        LOGGER.debug(pn)
-        if pn.__contains__('call_log'):
-            LOGGER.debug(pn['call_log'])
-            val_call_log = pn['call_log']
-        if pn.__contains__('amount'):
-            val_amount = pn['amount']
+        val_call_log = pn['call_log']
+        val_amount = pn['amount']
         val_user_number = pn['user_number']
         val_sponsor_number = pn['sponsor_number']
         val_network = pn['network']
@@ -327,6 +322,7 @@ def outer(request):
 
 # third phase
 def pay_return(request):
+    """Client device is redirected to this view after payment.  GET request only"""
     LOGGER.debug('pay_return')
     if request.method == 'GET':
         LOGGER.debug('GET')
@@ -339,6 +335,7 @@ def pay_return(request):
         return render(request, 'incoming/return.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
+        return simple_page_not_found(request)
     else:
         LOGGER.debug('not supported')
 
@@ -411,7 +408,7 @@ def dash(request):
         LOGGER.debug('POST')
 
 
-def simple_page_not_found(request, exception):
+def simple_page_not_found(request):
     LOGGER.debug(request.GET)
     LOGGER.debug('simple page not found')
     return render(request, 'incoming/page_not_found.html')
@@ -480,7 +477,9 @@ def pay_notify_datain(request):
     LOGGER.debug(request.path_info)
     LOGGER.debug(request.method)
     if request.method == 'GET':
-        LOGGER.debug("pay_notify:GET:" + str(request.__dict__))
+        # should not be used
+        LOGGER.debug("Error url invalid :pay_notify:GET:" + str(request.__dict__))
+        raise Http404("Invalid url for this application.")
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
     elif request.method == 'POST':
         # direct POST from instapay server, there is no form validation required.

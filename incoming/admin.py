@@ -37,6 +37,7 @@ class ProductionPurchaseAdmin(admin.ModelAdmin):
 class ProcessingPurchaseAdmin(admin.ModelAdmin):
     list_display = ('status', 'number', 'amount', 'timestamp')
 
+
 admin.site.register(CodeFunction, CodeFunctionAdmin)
 admin.site.register(PayInit, PayInitAdmin)
 admin.site.register(PayBuyer, PayBuyerAdmin)
