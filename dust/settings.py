@@ -30,13 +30,13 @@ DEBUG = False
 ALLOWED_HOSTS = ['0.0.0.0', '196.38.95.55', '196.38.95.56', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
 
 
-if DEBUG == True:
-    ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
-
 if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com',
+                     '*.pleasetopmeup.com']
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 else:
+    ALLOWED_HOSTS = ['0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'crispy_forms',
-    "crispy_bootstrap4",
+    'crispy_bootstrap4',
     'django_cron',
     'rest_framework',
     'incoming.apps.IncomingConfig'
@@ -71,12 +71,12 @@ MIDDLEWARE = [
 ]
 
 CRON_CLASSES = [
-    "incoming.incoming_utils.JCronJob",
+    'incoming.incoming_utils.JCronJob',
 ]
 
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 ROOT_URLCONF = 'dust.urls'
 
@@ -105,41 +105,41 @@ WSGI_APPLICATION = 'dust.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 JAZZMIN_SETTINGS = {
-    "site_title": "PTMU Admin",
-    "site_header": "Includes USSD,SMS,PAYMENTS,AIRTIME-TOPUPS logs",
-    "site_brand": "PTMU",
-    "site_logo": "static/incoming/nunchucks.webp",
-    "login_logo": "static/incoming/nunchucks.webp",
-    "site_logo_classes": "img-circle",
-    "welcome_sign": "Welcome to the Dashboard",
-    "copyright": "Sweet Crystals PTY LTD",
-    "search_model": ["auth.User", "auth.Group", "incoming.CodeFunction"],
+    'site_title': 'PTMU Admin',
+    'site_header': 'Includes USSD,SMS,PAYMENTS,AIRTIME-TOPUPS logs',
+    'site_brand': 'PTMU',
+    'site_logo': 'static/incoming/nunchucks.webp',
+    'login_logo': 'static/incoming/nunchucks.webp',
+    'site_logo_classes': 'img-circle',
+    'welcome_sign': 'Welcome to the Dashboard',
+    'copyright': 'Sweet Crystals PTY LTD',
+    'search_model': ['auth.User', 'auth.Group', 'incoming.CodeFunction'],
 
-    "topmenu_links": [
+    'topmenu_links': [
 
         # Url that gets reversed (Permissions can be added)
-        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {'name': 'Home',  'url': 'admin:index', 'permissions': ['auth.view_user']},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        {'name': 'Support', 'url': 'https://github.com/farridav/django-jazzmin/issues', 'new_window': True},
 
         # model admin to link to (Permissions checked against model)
-        {"model": "auth.User"},
+        {'model': 'auth.User'},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "incoming"},
+        {'app': 'incoming'},
     ],
 
-    "show_sidebar": True,
+    'show_sidebar': True,
 
     # Whether to aut expand the menu
-    "navigation_expanded": True,
+    'navigation_expanded': True,
 
     # Hide these apps when generating side menu e.g (auth)
-    "hide_apps": [],
+    'hide_apps': [],
 
     # Hide these models when generating side menu (e.g auth.user)
-    "hide_models": [],
+    'hide_models': [],
 }
 
 

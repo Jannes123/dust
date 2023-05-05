@@ -34,7 +34,7 @@ import logging
 LOGGER = logging.getLogger('django.request')
 
 
-#not intended as view only utility function for building a large form
+# not intended as view only utility function for building a large form
 def get_insta_form(request, jamount, m_tx_order_nr):
     """utility function for building a large form
         also creates entries in db for tracking requests
@@ -105,7 +105,7 @@ def get_insta_form(request, jamount, m_tx_order_nr):
     m_return_url = 'https://' + jdomain + reverse('ussd:return-from-pay') + stripped_match + '/'
     m_cancel_url = 'https://' + jdomain + reverse('ussd:cancel') + stripped_match + '/'
     m_pending_url = 'https://' + jdomain + reverse('ussd:pending') + stripped_match + '/'
-    #m_notify_url = 'https://' + jdomain + reverse('ussd:notify-rest-get') + stripped_match + '/'
+    # m_notify_url = 'https://' + jdomain + reverse('ussd:notify-rest-get') + stripped_match + '/'
     m_notify_url = 'https://' + jdomain + reverse('ussd:return-from-pay-simple') + stripped_match + '/'
     # m_email_address =
     # checksum
@@ -168,6 +168,7 @@ def get_insta_form(request, jamount, m_tx_order_nr):
     LOGGER.debug(insta_form_obj)
     return insta_form_obj
 
+
 @csrf_exempt
 def onlytheform(request):
     LOGGER.debug('only form')
@@ -177,7 +178,8 @@ def onlytheform(request):
     elif request.method =='POST':
         LOGGER.debug(request.read())
 
-#ussd first phase
+
+# ussd first phase
 @csrf_exempt
 def edit_detail_datain(request):
     """
@@ -186,15 +188,15 @@ def edit_detail_datain(request):
     """
     LOGGER.debug(request.path_info)
     if request.method == 'GET':
-        #LOGGER.debug("edit_detail_in:GET:" + str(request.__dict__))
+        # LOGGER.debug("edit_detail_in:GET:" + str(request.__dict__))
         LOGGER.debug(request.content_params)
         LOGGER.debug(request._messages)
         t = TemplateResponse(request, 'incoming/home.html', {})
         return t
     elif request.method == 'POST':
-        #post data received from logs:
-        #b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
-        #LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
+        # post data received:
+        # b'{"call_log":"1011423848","amount":"56","user_number":"0792217404","sponsor_number":"0828000107","network":"Vodacom"}'
+        # LOGGER.debug("edit_detail_in:POST" + str(request.__dict__))
         LOGGER.debug('POST')
         post_data_bytes = request.read()
         LOGGER.debug(post_data_bytes)
@@ -221,7 +223,7 @@ def edit_detail_datain(request):
             LOGGER.warning('Codefunction unable to create entry')
             LOGGER.error(e, exc_info=True)
             raise Http404("cannot create entry")
-            #404 cannot create
+            # 404 cannot create
         # http redirect to url serving xml doc
         # data was saved now return confirmation along with uuid
         LOGGER.debug('edit_detail_datain: phase1 complete, using rest to lookup and return xml from this entry')
@@ -229,7 +231,8 @@ def edit_detail_datain(request):
     else:
         LOGGER.debug('wrong method: GET')
 
-#second phase
+
+# second phase
 @csrf_protect
 def outer(request):
     """
@@ -276,7 +279,7 @@ def outer(request):
         LOGGER.debug(request.POST)
         form = ProductionPurchaseForm(request.POST)
         if form.is_valid():
-            result = form.save()#Do lots of validation
+            result = form.save()# Do lots of validation
             LOGGER.debug(result)
             # refresh result variable from db???
             match_result = request.path_info
@@ -291,7 +294,7 @@ def outer(request):
                 LOGGER.debug(e)
             result.original_url_unique = nr
             result.save()
-            #next view to redirect to success page/instapay
+            # next view to redirect to success page/instapay
             context = {}
             LOGGER.debug('second phase complete')
             m_tx_order_nr = 'CAL' + str(uuid.uuid4())[-18:-1]
@@ -423,10 +426,10 @@ class OuterXML(viewsets.ModelViewSet):
 
     def xmlout(self, request, pay_url):
         LOGGER.debug('---found view---')
-        #LOGGER.debug(kwargs)
+        # LOGGER.debug(kwargs)
         LOGGER.debug(request)
-        #cashdrp = kwargs['pay_url']
-        #queryset = self.get_queryset().filter(pay_url=cashdrp)
+        # cashdrp = kwargs['pay_url']
+        # queryset = self.get_queryset().filter(pay_url=cashdrp)
         doc_send = self.get_object()
         data_param = self.serializer_class(doc_send).data
         return Response(data_param, status=status.HTTP_200_OK)
