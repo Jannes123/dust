@@ -27,6 +27,9 @@ SECRET_KEY = 'django-insecure-fj2js-xx^qt@1qf9uz(!x(xu#s*h%2pyqs7rbj(*f7a(md#w4q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+ALLOWED_HOSTS = ['0.0.0.0', '196.38.95.55', '196.38.95.56', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com', '*.pleasetopmeup.com']
+
+
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '34.29.229.62', 'pleasetopmeup.com', 'www.pleasetopmeup.com',
                      '*.pleasetopmeup.com']
