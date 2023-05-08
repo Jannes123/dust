@@ -57,7 +57,7 @@ def report_on_airtime(session, order_number):
     """.format(order_number=order_number)
     response = session.post(url, data=body, headers=headers)
     root = ET.fromstring(response.text)
-    LOGGER.debug(root)
+    # LOGGER.debug(root)
     # print(response.text)
     error_code = root.find(".//errorcode").text
     LOGGER.debug('error_code:')
@@ -116,7 +116,7 @@ def buy_airtime(session, amount, destination, network):
        </soapenv:Body>
     </soapenv:Envelope>
     """.format(amount=amount, destination=destination, network=jnetwork)
-    LOGGER.debug(body)
+    # LOGGER.debug(body)
 
     try:
         response = session.post(url, data=body, headers=headers)
@@ -127,7 +127,7 @@ def buy_airtime(session, amount, destination, network):
         LOGGER.debug('airtime purchase: Too many redirects')
         return False
     except Timeout:
-        LOGGER.debug('airtime purchase: Cannot connect')
+        LOGGER.debug('airtime purchase: Cannot connect, timeout')
         return False
 
     root = ET.fromstring(response.text)
@@ -167,8 +167,9 @@ class JCronJob(CronJobBase):
         s = Session()
         for processx in temp_holder:
             if processx.status == 'D':
-                LOGGER.debug('***servicing done purchase')
+                # LOGGER.debug('***servicing done purchase')
                 #processx.delete()
+                pass
             elif processx.status == 'P':
                 LOGGER.debug('servicing processing purchase')
                 #check if airtime is on cellphone account

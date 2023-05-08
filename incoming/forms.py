@@ -37,7 +37,7 @@ class ProductionPurchaseForm(forms.ModelForm):
                 css_class="row"
             ),
             ButtonHolder(
-                Submit('submit', 'Submit', css_class='jbutton row button white')
+                Submit('submit', ' GO ', css_class='jbutton row button white')
             )
         )
 

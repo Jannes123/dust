@@ -83,7 +83,6 @@ target/
 __pycache__/
 local_settings.py
 dust/static/*
-static/*
 halyard/*
 .env
 db.sqlite3

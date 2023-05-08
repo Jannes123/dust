@@ -184,7 +184,7 @@ def onlytheform(request):
 def edit_detail_datain(request):
     """
     incoming json, outgoing xml??
-    curl -k -X POST https://pleasetopmeup.com/ussdincoming -H 'Content-Type: application/json' -d '{"call_log":"256789506","amount":"39","user_number":"0792218349","sponsor_number":"0828000256","network":"Vodacom"}
+    curl -k -X POST https://pleasetopmeup.com/ussdincoming -H 'Content-Type: application/json' -d '{"call_log":"256789506","amount":"39","user_number":"0792218349","sponsor_number":"0828000256","network":"Vodacom"}'
     """
     LOGGER.debug(request.path_info)
     if request.method == 'GET':
@@ -334,8 +334,8 @@ def pay_return(request):
         # todo:present payment and topup status
         return render(request, 'incoming/return.html', context)
     elif request.method == 'POST':
-        LOGGER.debug('POST')
-        return simple_page_not_found(request)
+        LOGGER.debug('pay_return : POST not supported for this url')
+        raise Http404('View illegal')
     else:
         LOGGER.debug('not supported')
 
@@ -403,14 +403,32 @@ def dash(request):
 
         balance = root.find(".//balance").text
         context = {'airtime_balance': balance}
+        try:
+            # there can be only one
+            airtime_purchase = ProcessingPurchase.objects.all()
+        except DatabaseError as e:
+            LOGGER.debug(e)
+            LOGGER.debug('cannot find linked processing_order_entry')
+        ussd_data = []
+        for j in airtime_purchase:
+            attempt = "{jn}<-->{js}-->paid by: {jspon}".format(
+                jn=j.number,
+                js=j.get_status_display(),
+                jspon=j.original_ussd.sponsor_number
+            )
+            ussd_data.append(attempt)
+            context['ussd_data'] = ussd_data
         return render(request, 'incoming/dash.html', context)
     elif request.method == 'POST':
         LOGGER.debug('POST')
 
 
-def simple_page_not_found(request):
+# handler not standard view see docs https://docs.djangoproject.com/en/4.2/topics/http/views/#django.http.Http404
+def simple_page_not_found(request, exception=None):
     LOGGER.debug(request.GET)
     LOGGER.debug('simple page not found')
+    if exception != None:
+        LOGGER.debug(exception)
     return render(request, 'incoming/page_not_found.html')
 
 
@@ -479,7 +497,7 @@ def pay_notify_datain(request):
     if request.method == 'GET':
         # should not be used
         LOGGER.debug("Error url invalid :pay_notify:GET:" + str(request.__dict__))
-        raise Http404("Invalid url for this application.")
+        # raise Http404("Invalid url for this application.")
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
     elif request.method == 'POST':
         # direct POST from instapay server, there is no form validation required.

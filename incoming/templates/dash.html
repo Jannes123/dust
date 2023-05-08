@@ -6,8 +6,20 @@
                 <div class="yellow center">
                 <h2>PLEASETOPMEUP</h2>
                  <h1>AIRTIME BALANCE: {{ airtime_balance }}</h1>
+                </div class="yellow center">
+                <h2>USSD<-->Instapay-Status<-->Sponsor</h2>
+                    <div class="container">
+                        {% for attempt in ussd_data %}
+                            {% if attempt.done %}
+                            <span class="badge text-bg-success">{{ attempt }}</span>
+                            {% else %}
+                                <h5>Report  <span class="badge badge-success text-bg-secondary">u{{ attempt }}</span></h5>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
 {% endblock middle %}
 {% block lowslider %}
 <a class = "btn btn-info btn-sm" href = "#" role = "button">Read more</a>
 {% endblock lowslider %}
+{% block lowest %}--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------{% endblock lowest %}
