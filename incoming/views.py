@@ -405,17 +405,20 @@ def dash(request):
         context = {'airtime_balance': balance}
         try:
             # there can be only one
-            airtime_purchase = ProcessingPurchase.objects.all()
+            airtime_purchase = ProcessingPurchase.objects.all().order_by('timestamp').reverse()[0:10]
         except DatabaseError as e:
             LOGGER.debug(e)
             LOGGER.debug('cannot find linked processing_order_entry')
         ussd_data = []
         for j in airtime_purchase:
-            attempt = "{jn}<-->{js}-->paid by: {jspon}".format(
+            done = (j.status == 'D')
+            attempt = {'repr': "{jn}<-->{js}-->paid by: {jspon}".format(
                 jn=j.number,
                 js=j.get_status_display(),
                 jspon=j.original_ussd.sponsor_number
-            )
+            ),
+            'when': j.timestamp,
+            'done': done}
             ussd_data.append(attempt)
             context['ussd_data'] = ussd_data
         return render(request, 'incoming/dash.html', context)

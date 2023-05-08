@@ -10,10 +10,10 @@
                 <h2>USSD<-->Instapay-Status<-->Sponsor</h2>
                     <div class="container">
                         {% for attempt in ussd_data %}
-                            {% if attempt.done %}
-                            <span class="badge text-bg-success">{{ attempt }}</span>
+                            {% if not attempt.done %}
+                            <h5>Report {{ attempt.when }}  <span class="badge badge-warning text-bg-warning">{{ attempt.repr }}</span></h5>
                             {% else %}
-                                <h5>Report  <span class="badge badge-success text-bg-secondary">u{{ attempt }}</span></h5>
+                             <h5>Report {{ attempt.when }}  <span class="badge badge-success text-bg-secondary">{{ attempt.repr }}</span></h5>
                             {% endif %}
                         {% endfor %}
                     </div>
